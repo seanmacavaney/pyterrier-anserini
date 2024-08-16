@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-    
     strategy:
       matrix:
         python-version: ['3.10']
@@ -37,11 +36,11 @@ jobs:
          java-version: ${{ matrix.java }}
          distribution: 'zulu'
 
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      with:
-        path: ${{ env.pythonLocation }}
-        key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-test.txt') }}
+    # - name: Cache Dependencies
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ${{ env.pythonLocation }}
+    #     key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-test.txt') }}
 
      - name: Install Dependencies
        run: |
