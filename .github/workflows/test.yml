@@ -41,7 +41,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: ${{ matrix.os }}-${{ matrix.python }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-test.txt') }}
+        key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-test.txt') }}
 
      - name: Install Dependencies
        run: |
