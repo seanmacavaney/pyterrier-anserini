@@ -36,7 +36,13 @@ jobs:
        with:
          java-version: ${{ matrix.java }}
          distribution: 'zulu'
-  
+
+    - name: Cache Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ matrix.os }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-test.txt') }}
+
      - name: Install Dependencies
        run: |
          pip install --upgrade -r requirements.txt -r requirements-dev.txt faiss-cpu torch
