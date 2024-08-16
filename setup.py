@@ -27,5 +27,5 @@ setup(
         ],
     },
     install_requires=list(open('requirements.txt', 'rt')),
-    python_requires='>=3.8',
+    python_requires='>=3.10',
 )
