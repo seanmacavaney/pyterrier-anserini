@@ -5,7 +5,7 @@ import pyterrier_anserini
 
 class TestAnseriniRetriever(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestAnseriniRetriever, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.here = os.path.dirname(os.path.realpath(__file__))
 
     def test_anserini_vaswani(self):

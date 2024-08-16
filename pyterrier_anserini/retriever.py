@@ -1,40 +1,47 @@
+from typing import Union, Dict
 from warnings import warn
 import pandas as pd
-import pyterrier as pt
-import pyterrier_anserini
+import numpy as np
 from deprecated import deprecated
+import pyterrier as pt
+import pyterrier_alpha as pta
+import pyterrier_anserini
+from pyterrier_anserini._wmodel import AnseriniWeightModel
 
 @pt.java.required
 class AnseriniRetriever(pt.Transformer):
     """
         Allows retrieval from an Anserini index.
     """
-    def __init__(self, index_location, k=1000, wmodel="BM25", verbose=False):
+    def __init__(self,
+        index_location: str,
+        wmodel: Union[AnseriniWeightModel, str] = "BM25",
+        num_results: int = 1000,
+        verbose: bool = False,
+        wmodel_args: Dict[str, any] = None,
+    ):
         """
             Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher. 
 
             Args:
-
                 index_location(str): The location of the Anserini index.
                 wmodel(str): Weighting models supported by Anserini. There are three options: 
-                
-                 * `"BM25"` - the BM25 weighting model
-                 * `"QLD"`  - Dirichlet language modelling
-                 *  `"TFIDF"` - Lucene's `ClassicSimilarity <https://lucene.apache.org/core/8_1_0/core/org/apache/lucene/search/similarities/ClassicSimilarity.html>`_.
-                k(int): number of results to return. Default is 1000.
+                num_results(int): number of results to return. Default is 1000.
+                verbose(bool): show a progress bar during retrieval?
+                wmodel_args(dict): model-specific arguments, like bm25.k1.
         """
         self.index_location = index_location
-        self.k = k
+        self.num_results = num_results
         self.wmodel = wmodel
         self.verbose = verbose
         from pyserini.search.lucene import LuceneSearcher
         self.searcher = LuceneSearcher(index_location)
-        self._setsimilarty(wmodel)
+        self.wmodel_args = wmodel_args or {}
 
     def __reduce__(self):
         return (
             self.__class__,
-            (self.index_location, self.k, self.wmodel, self.verbose),
+            (self.index_location, self.wmodel, self.num_results, self.verbose, self.wmodel_args),
             self.__getstate__()
         )
 
@@ -44,80 +51,55 @@ class AnseriniRetriever(pt.Transformer):
     def __setstate__(self, d): 
         pass
 
-    def _setsimilarty(self, wmodel):
-        if wmodel == "BM25":
-            self.searcher.set_bm25(k1=0.9, b=0.4)
-        elif wmodel == "QLD":
-            self.searcher.object.set_qld(1000.0)
-        elif wmodel == "TFIDF":
-            self.searcher.object.similarty = pyterrier_anserini.J.ClassicSimilarity()
-        else:
-            raise ValueError("wmodel %s not support in AnseriniRetriever" % wmodel) 
-
-    def _getsimilarty(self, wmodel):
-        if wmodel == "BM25":
-            return pyterrier_anserini.J.BM25Similarity(0.9, 0.4)#(self.searcher.object.bm25_k1, self.searcher.object.bm25_b)
-        elif wmodel == "QLD":
-            return pyterrier_anserini.J.LMDirichletSimilarity(1000.0)# (self.searcher.object.ql_mu)
-        elif wmodel == "TFIDF":
-            return pyterrier_anserini.ClassicSimilarity()
-        else:
-            raise ValueError("wmodel %s not support in AnseriniRetriever" % wmodel) 
-
     def __str__(self):
         return "AnseriniRetriever()"
 
     def __repr__(self):
         return f"AnseriniRetriever({self.wmodel!r}, {self.k!r})"
     
-    def transform(self, queries):
+    def transform(self, inp: pd.DataFrame) -> pd.DataFrame:
         """
-        Performs the retrieval
+        Performs retrieval
 
         Args:
-            queries: String for a single query, list of queries, or a pandas.Dataframe with columns=['qid', 'query']
+            A pandas.Dataframe
 
         Returns:
             pandas.DataFrame with columns=['qid', 'docno', 'rank', 'score']
         """
-        results=[]
-        if not isinstance(queries, pd.DataFrame):
-            warn(".transform() should be passed a dataframe. Use .search() to execute a single query.", DeprecationWarning, 2)
-            queries=pt.model.coerce_queries_dataframe(queries)
-        docno_provided = "docno" in queries.columns
-        docid_provided = "docid" in queries.columns
-        if docid_provided and not docno_provided:
-            raise KeyError("Anserini doesnt expose Lucene's internal docids, you need the docnos")
-        if docno_provided: #we are re-ranking
+        with pta.validate.any(inp) as v:
+            v.query_frame(extra_columns=['query'], mode='retrieve')
+            v.result_frame(extra_columns=['query'], mode='rerank')
+
+        sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
+
+        if v.mode == 'rerank':
             indexreaderutils = pyterrier_anserini.J.IndexReaderUtils
             indexreader = self.searcher.object.reader
-            rank = 0
-            last_qid = None
-            sim = self._getsimilarty(self.wmodel)
-            for row in pt.tqdm(queries.itertuples(), desc=self.name, total=queries.shape[0], unit="d") if self.verbose else queries.itertuples():
-                qid = str(row.qid)
-                query = row.query
-                docno = row.docno
-                if last_qid is None or last_qid != qid:
-                    rank = 0
-                rank += 1
-                score = indexreaderutils.computeQueryDocumentScoreWithSimilarity(indexreader, docno, query, sim)
-                results.append([qid, query, docno, rank, score])
+            def _score(query, docno):
+                return indexreaderutils.computeQueryDocumentScoreWithSimilarity(indexreader, docno, query, sim)
+            it = zip(inp['query'], inp['docno'])
+            if self.verbose:
+                it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
+            result = inp.assign(score=[_score(query, docno) for query, docno in it])
+            result = pt.model.add_ranks(result)
+            return result
 
-        else: #we are searching, no candidate set provided
-            for row in pt.tqdm(queries.itertuples(), desc=self.name, total=queries.shape[0], unit="q") if self.verbose else queries.itertuples():
-                rank = 0
-                qid = str(row.qid)
-                query = row.query
-                
-                hits = self.searcher.search(query, k=self.k)
-                for i in range(0, min(len(hits), self.k)):
-                    res = [qid, query,hits[i].docid,rank, hits[i].score]
-                    rank += 1
-                    results.append(res)   
-                
-        res_dt = pd.DataFrame(results, columns=['qid', 'query'] + ["docno"] + ['rank', 'score'])
-        return res_dt
+        if v.mode == 'retrieve':
+            self.searcher.object.similarty = sim
+            result = pta.DataFrameBuilder(['_index', 'docno', 'score', 'rank'])
+            it = enumerate(inp['query'])
+            if self.verbose:
+                it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
+            for i, query in it:
+                hits = self.searcher.search(query, k=self.num_results)
+                result.extend({
+                    '_index': i,
+                    'docno': [h.docid for h in hits],
+                    'score': [h.score for h in hits],
+                    'rank': np.arange(len(hits)),
+                })
+            return result.to_df(merge_on_index=inp)
 
 
 @deprecated(version='0.0.1', reason='Use AnseriniRetriever insead')
