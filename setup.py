@@ -20,7 +20,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'pyterrier.java.init': [
-            'pyterrier_anserini.java = pyterrier_anserini.java:AnseriniJavaInit',
+            'pyterrier_anserini.java = pyterrier_anserini._java:AnseriniJavaInit',
         ],
         'pyterrier.modules': [
             'anserini = pyterrier_anserini',
