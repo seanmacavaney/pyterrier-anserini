@@ -1,0 +1,48 @@
+name: Unit tests
+
+on:
+  push: {branches: [master]} # pushes to master
+  pull_request: {} # all PRs
+  schedule: [cron: '0 12 * * 3'] # every Wednesday at noon
+
+jobs:
+  build:
+    
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.12']
+        pyserini: ['pyserini', 'pyserini==0.19.0', 'pyserini==0.22.0', 'pyserini==0.36.0']
+        java: [21]
+        os: ['ubuntu-latest']
+        pyterrier: [
+          # 'python-terrier', # TODO: from pypi
+          # 'git+https://github.com/terrier-org/pyterrier', # TODO: latest on github
+          'git+https://github.com/terrier-org/pyterrier@remove_anserini', # TMP: remove_anserini branch
+        ]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+
+     - name: Checkout
+       uses: actions/checkout@v4
+
+     - name: Install Python ${{ matrix.python-version }}
+       uses: actions/setup-python@v5
+       with:
+         python-version: ${{ matrix.python-version }}
+
+     - name: Install Java ${{ matrix.java }}
+       uses: actions/setup-java@v4
+       with:
+         java-version: ${{ matrix.java }}
+         distribution: 'zulu'
+  
+     - name: Install Dependencies
+       run: |
+         pip install --upgrade -r requirements.txt -r requirements-dev.txt
+         pip install --upgrade ${{ matrix.pyterrier }} ${{ matrix.pyserini }} # use the specified pyterrier and pyserini versions
+         pip install .
+
+     - name: Unit Test
+       run: |
+         pytest --durations=20 -p no:faulthandler tests/
