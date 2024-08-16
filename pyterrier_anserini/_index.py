@@ -128,6 +128,28 @@ class AnseriniIndex(pta.Artifact):
             num_results=num_results,
             verbose=verbose)
 
+    def text_loader(
+        self,
+        fields: Optional[Union[str, List[str]]] = None,
+        *,
+        verbose: bool = False,
+    ) -> pt.Transformer:
+        """Provides a transformer that can be used to ,oad the text from this index for each document.
+
+        Args:
+            fields: The fields to extract. When None, extracts all available fields. Defaults to None.
+            verbose: Output verbose logging. Defaults to False.
+
+        Returns:
+            A transformer that can be used to load the text from this index for each document.
+
+        Category: Transformer Builders
+        """
+        return pyterrier_anserini.AnseriniTextLoader(
+            index=self,
+            fields=fields,
+            verbose=verbose)
+
     def _searcher(self):
         from pyserini.search.lucene import LuceneSearcher
         assert self.built(), "a searcher object can only be created if the index is built"
