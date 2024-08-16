@@ -14,6 +14,9 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
     def __init__(self):
         self._message = None
 
+    def priority(self) -> int:
+        return -10 # needs to be between pt.java.core (-100) and pt.terrier (0) to avoid issues with logger configs
+
     def pre_init(self, jnius_config):
         if configure['version'] is None:
             jar, version = _get_pyserini_jar()
