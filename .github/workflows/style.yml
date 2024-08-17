@@ -33,10 +33,10 @@ jobs:
         pip install .
 
     - name: Cache Dependencies
-       uses: actions/cache@v4
-       with:
-         path: ${{ env.pythonLocation }}
-         key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-dev.txt') }}
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-dev.txt') }}
 
     - name: Ruff
       run: 'ruff --output-format=github pyterrier_anserini'
