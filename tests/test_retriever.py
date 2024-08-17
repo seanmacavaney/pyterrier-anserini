@@ -41,9 +41,3 @@ class TestAnseriniRetriever(unittest.TestCase):
         ]))
         self.assertEqual(len(res), 52)
         self.assertAlmostEqual(res['score'][0], 10.6, places=4)
-
-    def test_fail(self):
-        self.assertTrue(False)
-
-    def test_error(self):
-        x = 1 / 0
