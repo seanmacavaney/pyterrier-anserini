@@ -48,7 +48,7 @@ class AnseriniTextLoader(pt.Transformer):
 
         for i, docno in it:
             doc = utils.document(index_reader, docno)
-            res = {f: doc.get(f) for f in fields}
+            res = {f: doc.get(f) for f in self.fields}
             res['_index'] = i
             results.extend(res)
 
