@@ -9,7 +9,7 @@ class TestAnseriniRetriever(unittest.TestCase):
         self.here = os.path.dirname(os.path.realpath(__file__))
 
     def test_anserini_vaswani(self):
-        index = pyterrier_anserini.AnseriniIndex(os.path.join(self.here, "fixtures", "anserini_index"))
+        index = pyterrier_anserini.AnseriniIndex.from_url(os.path.join(self.here, "fixtures/vaswani.tar.lz4"))
         bm25 = index.bm25()
         qld = index.qld()
         tf_idf = index.tfidf()
@@ -22,7 +22,7 @@ class TestAnseriniRetriever(unittest.TestCase):
             dataset.get_topics(), 
             dataset.get_qrels(), 
             ["map"])
-        self.assertEqual(0.2856564466226712, df.iloc[0]["map"])
+        self.assertAlmostEqual(0.2856, df.iloc[0]["map"], places=4)
         for i in df['map']:
             self.assertGreater(i, 0)
         

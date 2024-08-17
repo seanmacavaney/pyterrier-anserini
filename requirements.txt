@@ -1,3 +1,3 @@
 python-terrier
 pyserini
-pyterrier-alpha>=0.4.1
+pyterrier-alpha>=0.4.2

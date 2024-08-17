@@ -32,6 +32,24 @@ class AnseriniIndex(pta.Artifact):
         """
         return os.path.exists(self.path)
 
+    def indexer(self,
+        *,
+        fields: Union[List[str], Literal['*']] = '*',
+        verbose: bool = False
+    ) -> pt.Indexer:
+        """Provides an indexer for this index.
+
+        Args:
+            fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the fields
+                provided in this argumetn are concatenated and indexed.
+            verbose: Whether to display a progress bar when indexing.
+
+        Category: Transformer Builders
+        """
+        return pyterrier_anserini.AnseriniIndexer(self,
+            fields=fields,
+            verbose=verbose)
+
     def retriever(self,
         wmodel: Union[str, AnseriniWeightModel],
         wmodel_args: Optional[Dict[str, Any]] = None,
