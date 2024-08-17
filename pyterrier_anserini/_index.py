@@ -3,6 +3,7 @@ from typing import Dict, List, Literal, Optional, Union, Any
 import pyterrier as pt
 import pyterrier_alpha as pta
 import pyterrier_anserini
+from pyterrier_anserini import J
 from pyterrier_anserini._wmodel import DEFAULT_WMODEL_ARGS, AnseriniWeightModel
 
 
@@ -32,11 +33,12 @@ class AnseriniIndex(pta.Artifact):
         return os.path.exists(self.path)
 
     def retriever(self,
-                  wmodel: Union[str, AnseriniWeightModel],
-                  wmodel_args: Optional[Dict[str, Any]] = None,
-                  *,
-                  num_results: int = 1000,
-                  verbose: bool = False) -> pt.Transformer:
+        wmodel: Union[str, AnseriniWeightModel],
+        wmodel_args: Optional[Dict[str, Any]] = None,
+        *,
+        num_results: int = 1000,
+        verbose: bool = False
+    ) -> pt.Transformer:
         """Provides a retriever that uses the specified similarity function.
 
         Args:
@@ -58,11 +60,12 @@ class AnseriniIndex(pta.Artifact):
             verbose=verbose)
 
     def bm25(self,
-             k1: float = DEFAULT_WMODEL_ARGS['bm25.k1'],
-             b: float = DEFAULT_WMODEL_ARGS['bm25.b'],
-             *,
-             num_results: int = 1000,
-             verbose: bool = False) -> pt.Transformer:
+        *,
+        k1: float = DEFAULT_WMODEL_ARGS['bm25.k1'],
+        b: float = DEFAULT_WMODEL_ARGS['bm25.b'],
+        num_results: int = 1000,
+        verbose: bool = False
+    ) -> pt.Transformer:
         """Providers a retriever that uses BM25 over this index.
 
         Args:
@@ -84,10 +87,11 @@ class AnseriniIndex(pta.Artifact):
             verbose=verbose)
 
     def qld(self,
-             mu: float = DEFAULT_WMODEL_ARGS['qld.mu'],
-             *,
-             num_results: int = 1000,
-             verbose: bool = False) -> pt.Transformer:
+        *,
+        mu: float = DEFAULT_WMODEL_ARGS['qld.mu'],
+        num_results: int = 1000,
+        verbose: bool = False
+    ) -> pt.Transformer:
         """Providers a retriever that uses Query Likelihood with Dirichlet smoothing over this index.
 
         Args:
@@ -108,9 +112,10 @@ class AnseriniIndex(pta.Artifact):
             verbose=verbose)
 
     def tfidf(self,
-             *,
-             num_results: int = 1000,
-             verbose: bool = False) -> pt.Transformer:
+        *,
+        num_results: int = 1000,
+        verbose: bool = False
+    ) -> pt.Transformer:
         """Provides a TF-IDF retriever over this index.
 
         Args:
@@ -128,16 +133,15 @@ class AnseriniIndex(pta.Artifact):
             num_results=num_results,
             verbose=verbose)
 
-    def text_loader(
-        self,
-        fields: Optional[Union[str, List[str]]] = None,
+    def text_loader(self,
+        fields: Union[List[str], str, Literal['*']] = '*',
         *,
         verbose: bool = False,
     ) -> pt.Transformer:
-        """Provides a transformer that can be used to ,oad the text from this index for each document.
+        """Provides a transformer that can be used to load the text from this index for each document.
 
         Args:
-            fields: The fields to extract. When None, extracts all available fields. Defaults to None.
+            fields: The fields to extract. When the literal '*' (default), extracts all available fields.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -145,6 +149,11 @@ class AnseriniIndex(pta.Artifact):
 
         Category: Transformer Builders
         """
+        if fields == '*':
+            fields = self.fields()
+        elif isinstance(fields, str):
+            fields = [fields]
+
         return pyterrier_anserini.AnseriniTextLoader(
             index=self,
             fields=fields,
@@ -154,6 +163,10 @@ class AnseriniIndex(pta.Artifact):
         from pyserini.search.lucene import LuceneSearcher
         assert self.built(), "a searcher object can only be created if the index is built"
         return LuceneSearcher(self.path)
+
+    def fields(self) -> List[str]:
+        field_info = J.IndexReaderUtils.getFieldInfo(self._searcher().object.reader)
+        return [k for k in field_info if k != 'id']
 
     def __repr__(self):
         return f"AnseriniIndex({self.path!r})"

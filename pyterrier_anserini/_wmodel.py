@@ -24,3 +24,6 @@ class AnseriniWeightModel(Enum):
         elif self == AnseriniWeightModel.tfidf:
             return J.ClassicSimilarity()
         raise ValueError(f"wmodel {wmodel} is not supported") 
+
+    def __repr__(self):
+        return repr(self.value)

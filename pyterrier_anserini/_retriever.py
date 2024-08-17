@@ -17,9 +17,10 @@ class AnseriniRetriever(pt.Transformer):
     def __init__(self,
         index: Union[AnseriniIndex, str],
         wmodel: Union[AnseriniWeightModel, str] = "BM25",
+        wmodel_args: Dict[str, any] = None,
+        *,
         num_results: int = 1000,
         verbose: bool = False,
-        wmodel_args: Dict[str, any] = None,
     ):
         """
             Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher. 
@@ -35,16 +36,12 @@ class AnseriniRetriever(pt.Transformer):
             index = AnseriniIndex(index)
         self.index = index
         self.wmodel = wmodel
+        self.wmodel_args = wmodel_args or {}
         self.num_results = num_results
         self.verbose = verbose
-        self.wmodel_args = wmodel_args or {}
 
-    def __str__(self):
-        return "AnseriniRetriever()"
+    __repr__ = pta.transformer_repr
 
-    def __repr__(self):
-        return f"AnseriniRetriever({self.index!r}, {self.wmodel!r}, {self.k!r}, {self.wmodel_args!r})"
-    
     def transform(self, inp: pd.DataFrame) -> pd.DataFrame:
         """
         Performs retrieval
@@ -93,4 +90,8 @@ class AnseriniRetriever(pt.Transformer):
 
 @deprecated(version='0.0.1', reason='Use AnseriniRetriever insead')
 class AnseriniBatchRetrieve(AnseriniRetriever):
-    pass
+    def __init__(self, index_location, k=1000, wmodel="BM25", verbose=False):
+        super().__init__(index_location, wmodel, num_results=k, verbose=verbose)
+
+    def __repr__(self):
+        return f'AnseriniBatchRetrieve({self.index.path!r}, {self.num_results!r}, {str(self.wmodel)!r}, verbose={self.verbose!r})'
