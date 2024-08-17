@@ -28,5 +28,5 @@ class TestAnseriniRetriever(unittest.TestCase):
         
         # check re-ranking works too
         resIn = tf_idf.search("chemical reactions") 
-        resOut = (tf_idf >> bm25 >> index.text_loader()).search("chemical reactions")
+        resOut = (tf_idf >> index.reranker('BM25') >> index.text_loader()).search("chemical reactions")
         self.assertEqual(len(resIn), len(resOut))

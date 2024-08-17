@@ -50,48 +50,24 @@ class AnseriniRetriever(pt.Transformer):
             A pandas.Dataframe
 
         Returns:
-            pandas.DataFrame with columns=['qid', 'docno', 'rank', 'score']
+            pandas.DataFrame with columns=['qid', 'query', 'docno', 'rank', 'score']
         """
-        with pta.validate.any(inp) as v:
-            v.query_frame(extra_columns=['query'], mode='retrieve')
-            v.result_frame(extra_columns=['query'], mode='rerank')
+        pta.validate.query_frame(inp, extra_columns=['query'])
 
         sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
         searcher = self.index._searcher()
 
-        if v.mode == 'rerank':
-            indexreaderutils = pyterrier_anserini.J.IndexReaderUtils
-            indexreader = searcher.object.reader
-            def _score(query, docno):
-                return indexreaderutils.computeQueryDocumentScoreWithSimilarity(indexreader, docno, query, sim)
-            it = zip(inp['query'], inp['docno'])
-            if self.verbose:
-                it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
-            result = inp.assign(score=[_score(query, docno) for query, docno in it])
-            result = pt.model.add_ranks(result)
-            return result
-
-        if v.mode == 'retrieve':
-            searcher.object.similarty = sim
-            result = pta.DataFrameBuilder(['_index', 'docno', 'score', 'rank'])
-            it = enumerate(inp['query'])
-            if self.verbose:
-                it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
-            for i, query in it:
-                hits = searcher.search(query, k=self.num_results)
-                result.extend({
-                    '_index': i,
-                    'docno': [h.docid for h in hits],
-                    'score': [h.score for h in hits],
-                    'rank': np.arange(len(hits)),
-                })
-            return result.to_df(merge_on_index=inp)
-
-
-@deprecated(version='0.0.1', reason='Use AnseriniRetriever insead')
-class AnseriniBatchRetrieve(AnseriniRetriever):
-    def __init__(self, index_location, k=1000, wmodel="BM25", verbose=False):
-        super().__init__(index_location, wmodel, num_results=k, verbose=verbose)
-
-    def __repr__(self):
-        return f'AnseriniBatchRetrieve({self.index.path!r}, {self.num_results!r}, {str(self.wmodel)!r}, verbose={self.verbose!r})'
+        searcher.object.similarty = sim
+        result = pta.DataFrameBuilder(['_index', 'docno', 'score', 'rank'])
+        it = enumerate(inp['query'])
+        if self.verbose:
+            it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
+        for i, query in it:
+            hits = searcher.search(query, k=self.num_results)
+            result.extend({
+                '_index': i,
+                'docno': [h.docid for h in hits],
+                'score': [h.score for h in hits],
+                'rank': np.arange(len(hits)),
+            })
+        return result.to_df(merge_on_index=inp)

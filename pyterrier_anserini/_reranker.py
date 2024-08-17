@@ -1,0 +1,61 @@
+from typing import Dict, Union
+import pandas as pd
+import pyterrier as pt
+import pyterrier_alpha as pta
+from pyterrier_anserini import J
+from pyterrier_anserini._index import AnseriniIndex
+from pyterrier_anserini._wmodel import AnseriniWeightModel
+
+
+@pt.java.required
+class AnseriniReRanker(pt.Transformer):
+    """A transformer that scores (i.e., re-ranks) the provided documents from an Anserini index."""
+    def __init__(self,
+        index: Union[AnseriniIndex, str],
+        wmodel: Union[str, AnseriniWeightModel],
+        wmodel_args: Dict = None,
+        *,
+        verbose: bool = False
+    ):
+        """Initializes the scorer.
+
+        Args:
+            index: The index to score from. If a string, an AnseriniIndex object is created for the path.
+            wmodel: The weighting model to use for scoring.
+            wmodel_args: A dictionary of arguments to use for the weighting model.
+            verbose: Whether to display a progress bar when scoring.
+        """
+        self.index = index if isinstance(index, AnseriniIndex) else AnseriniIndex(index)
+        self.wmodel = AnseriniWeightModel(wmodel)
+        self.wmodel_args = wmodel_args or {}
+        self.verbose = verbose
+
+    __repr__ = pta.transformer_repr
+
+    def transform(self, inp: pd.DataFrame) -> pd.DataFrame:
+        """Scores (i.e., re-ranks) documents from the index for each query in `inp`.
+
+        Args:
+            inp: A DataFrame with a 'query' column containing queries and a 'docno' column containing document IDs.
+
+        Returns:
+            A DataFrame containing the scored documents, with any columns included in `inp`, plus
+            the 'score' and 'rank' of the scored documents.
+        """
+        pta.validate.result_frame(inp, ['query'])
+
+        sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
+        index_reader = self.index._searcher().object.reader
+
+        it = zip(inp['docno'], inp['query'])
+        if self.verbose:
+            it = pt.tqdm(it, unit='d', total=len(inp), desc='AnseriniScorer')
+
+        scores = [
+            J.IndexReaderUtils.computeQueryDocumentScoreWithSimilarity(index_reader, docno, query, sim)
+            for docno, query in it
+        ]
+        res = inp.assign(score=scores)
+
+        return pt.model.add_ranks(res)
+

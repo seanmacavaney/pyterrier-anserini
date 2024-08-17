@@ -151,6 +151,30 @@ class AnseriniIndex(pta.Artifact):
             num_results=num_results,
             verbose=verbose)
 
+    def reranker(self,
+        wmodel: Union[str, AnseriniWeightModel],
+        wmodel_args: Optional[Dict[str, Any]] = None,
+        *,
+        verbose: bool = False
+    ) -> pt.Transformer:
+        """Provides a reranker that uses the specified weithing model.
+
+        Args:
+            wmodel: The weighting model to use.
+            wmodel_args: The arguments to the weight model. Defaults to None.
+            verbose: Output verbose logging. Defaults to False.
+
+        Returns:
+            A transformer that can be used to score (rerank) documents from this index.
+
+        Category: Transformer Builders
+        """
+        return pyterrier_anserini.AnseriniReRanker(
+            index=self,
+            wmodel=wmodel,
+            wmodel_args=wmodel_args,
+            verbose=verbose)
+
     def text_loader(self,
         fields: Union[List[str], str, Literal['*']] = '*',
         *,
