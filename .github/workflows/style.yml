@@ -39,4 +39,4 @@ jobs:
         key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-dev.txt') }}
 
     - name: Ruff
-      run: 'ruff --output-format=github pyterrier_anserini'
+      run: 'ruff check --output-format=github pyterrier_anserini'
