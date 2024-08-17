@@ -12,6 +12,7 @@ class AnseriniWeightModel(Enum):
     bm25 = 'BM25'
     qld = 'QLD'
     tfidf = 'TFIDF'
+    impact = 'Impact'
 
     def to_java_sim(self, **kwargs: Any):
         args = {}
@@ -23,6 +24,8 @@ class AnseriniWeightModel(Enum):
             return J.LMDirichletSimilarity(args['qld.mu'])
         elif self == AnseriniWeightModel.tfidf:
             return J.ClassicSimilarity()
+        if self == AnseriniWeightModel.impact:
+            return J.ImpactSimilarity()
         raise ValueError(f"wmodel {wmodel} is not supported") 
 
     def __repr__(self):

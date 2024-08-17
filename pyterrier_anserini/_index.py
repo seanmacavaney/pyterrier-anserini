@@ -151,6 +151,30 @@ class AnseriniIndex(pta.Artifact):
             num_results=num_results,
             verbose=verbose)
 
+    def impact(self,
+        *,
+        num_results: int = 1000,
+        verbose: bool = False
+    ) -> pt.Transformer:
+        """Provides a retriever for pre-comptued impact scores.
+
+        This is called "quantized" scoring in PISA or "TF" scoring in Terrier.
+
+        Args:
+            num_results: The number of results to return. Defaults to 1000.
+            verbose: Output verbose logging. Defaults to False.
+
+        Returns:
+            A transformer that can be used to retrieve documents from this index using impact scores.
+
+        Category: Transformer Builders
+        """
+        return pyterrier_anserini.AnseriniRetriever(
+            index=self,
+            wmodel=AnseriniWeightModel.impact,
+            num_results=num_results,
+            verbose=verbose)
+
     def reranker(self,
         wmodel: Union[str, AnseriniWeightModel],
         wmodel_args: Optional[Dict[str, Any]] = None,

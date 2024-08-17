@@ -68,4 +68,6 @@ J = pt.java.JavaClasses(
     BM25Similarity = 'org.apache.lucene.search.similarities.BM25Similarity',
     LMDirichletSimilarity = 'org.apache.lucene.search.similarities.LMDirichletSimilarity',
     IndexReaderUtils = 'io.anserini.index.IndexReaderUtils',
+    QueryParser = 'org.apache.lucene.queryparser.classic.QueryParser',
+    ImpactSimilarity = 'io.anserini.search.similarity.ImpactSimilarity',
 )

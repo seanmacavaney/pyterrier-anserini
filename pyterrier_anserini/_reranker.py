@@ -42,12 +42,21 @@ class AnseriniReRanker(pt.Transformer):
             A DataFrame containing the scored documents, with any columns included in `inp`, plus
             the 'score' and 'rank' of the scored documents.
         """
-        pta.validate.result_frame(inp, ['query'])
+        with pta.validate.any(inp) as v:
+            v.result_frame(['query_lucene'], mode='query_lucene')
+            v.result_frame(['query_toks'], mode='query_toks')
+            v.result_frame(['query'], mode='query_text')
 
         sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
         index_reader = self.index._searcher().object.reader
 
-        it = zip(inp['docno'], inp['query'])
+        if v.mode == 'query_lucene':
+            raise NotImplementedError('query_lucene not yet supported for AnseriniReRanker')
+        elif v.mode == 'query_toks':
+            raise NotImplementedError('query_toks not yet supported for AnseriniReRanker')
+        elif v.mode == 'query_text':
+            it = zip(inp['docno'], inp['query'])
+
         if self.verbose:
             it = pt.tqdm(it, unit='d', total=len(inp), desc='AnseriniScorer')
 
