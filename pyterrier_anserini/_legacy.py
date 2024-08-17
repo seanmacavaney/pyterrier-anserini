@@ -1,7 +1,8 @@
 import pandas as pd
-from deprecated import deprecated
 import pyterrier as pt
 import pyterrier_alpha as pta
+from deprecated import deprecated
+
 import pyterrier_anserini
 
 
@@ -10,7 +11,7 @@ import pyterrier_anserini
 class AnseriniBatchRetrieve(pt.Transformer):
     """A backwards-compatible interface for Anserini retrieval and scoring."""
 
-    def __init__(self, index_location, k=1000, wmodel="BM25", verbose=False):
+    def __init__(self, index_location: str, k: int = 1000, wmodel: str = "BM25", verbose: bool = False):
         """Construct an AnseriniBatchRetrieve retrieve from pyserini.search.lucene.LuceneSearcher.
 
         Args:

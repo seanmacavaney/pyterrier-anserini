@@ -1,5 +1,6 @@
-from typing import Any
 from enum import Enum
+from typing import Any
+
 from pyterrier_anserini import J
 
 DEFAULT_WMODEL_ARGS = {
@@ -26,7 +27,7 @@ class AnseriniWeightModel(Enum):
             return J.ClassicSimilarity()
         if self == AnseriniWeightModel.impact:
             return J.ImpactSimilarity()
-        raise ValueError(f"wmodel {wmodel} is not supported") 
+        raise ValueError(f"wmodel {self} is not supported")
 
     def __repr__(self):
         return repr(self.value)

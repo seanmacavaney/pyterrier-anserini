@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 
 def get_version(rel_path):
     for line in open(rel_path):

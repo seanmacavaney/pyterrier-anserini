@@ -1,7 +1,10 @@
-import unittest
 import tempfile
+import unittest
+
 import pyterrier as pt
+
 import pyterrier_anserini
+
 
 class TestAnseriniIndexer(unittest.TestCase):
     def test_index_vaswani(self):

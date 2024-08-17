@@ -1,7 +1,9 @@
 from typing import Dict, Union
+
 import pandas as pd
 import pyterrier as pt
 import pyterrier_alpha as pta
+
 from pyterrier_anserini import J
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._wmodel import AnseriniWeightModel

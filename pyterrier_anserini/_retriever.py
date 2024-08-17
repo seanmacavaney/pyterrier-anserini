@@ -1,21 +1,20 @@
-from typing import Union, Dict, Any
-from warnings import warn
-import pandas as pd
+from typing import Any, Dict, Union
+
 import numpy as np
-from deprecated import deprecated
+import pandas as pd
 import pyterrier as pt
 import pyterrier_alpha as pta
-import pyterrier_anserini
+
 from pyterrier_anserini import J
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._wmodel import AnseriniWeightModel
 
 
-def _noop_query_parser(query):
+def _noop_query_parser(query: str) -> str:
     return query
 
 
-def _toks_query_parser_factory(parser):
+def _toks_query_parser_factory(parser): # noqa: ANN001
     def wrapped(toks: Dict[str, float]) -> Any:
         res = []
         for tok, weight in toks.items():
@@ -27,9 +26,7 @@ def _toks_query_parser_factory(parser):
 
 @pt.java.required
 class AnseriniRetriever(pt.Transformer):
-    """
-        Retrieves from an Anserini index.
-    """
+    """Retrieves from an Anserini index."""
     def __init__(self,
         index: Union[AnseriniIndex, str],
         wmodel: Union[AnseriniWeightModel, str] = "BM25",
@@ -38,15 +35,14 @@ class AnseriniRetriever(pt.Transformer):
         num_results: int = 1000,
         verbose: bool = False,
     ):
-        """
-            Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher. 
+        """Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher.
 
-            Args:
-                index(str|AnseriniIndex): The Anserini index.
-                wmodel(str|AnseriniWeightModel): Weighting models supported by Anserini.
-                num_results(int): number of results to return. Default is 1000.
-                verbose(bool): show a progress bar during retrieval?
-                wmodel_args(dict): model-specific arguments, like bm25.k1.
+        Args:
+            index(str|AnseriniIndex): The Anserini index.
+            wmodel(str|AnseriniWeightModel): Weighting models supported by Anserini.
+            num_results(int): number of results to return. Default is 1000.
+            verbose(bool): show a progress bar during retrieval?
+            wmodel_args(dict): model-specific arguments, like bm25.k1.
         """
         if not isinstance(index, AnseriniIndex):
             index = AnseriniIndex(index)
@@ -59,11 +55,10 @@ class AnseriniRetriever(pt.Transformer):
     __repr__ = pta.transformer_repr
 
     def transform(self, inp: pd.DataFrame) -> pd.DataFrame:
-        """
-        Performs retrieval
+        """Performs retrieval.
 
         Args:
-            A pandas.Dataframe
+            inp: A pandas.Dataframe
 
         Returns:
             pandas.DataFrame with columns=['qid', 'query', 'docno', 'rank', 'score']

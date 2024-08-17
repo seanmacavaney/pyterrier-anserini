@@ -1,8 +1,10 @@
 import json
 import os
-from typing import Dict, Iterable, List, Optional, Union, Literal
+from typing import Dict, Iterable, List, Literal, Union
+
 import pyterrier as pt
 import pyterrier_alpha as pta
+
 from pyterrier_anserini import AnseriniIndex
 
 

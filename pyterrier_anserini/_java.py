@@ -1,9 +1,9 @@
 import os
-from pathlib import Path
 from glob import glob
-from typing import Callable, Optional, Union, Tuple
-import pyterrier as pt
+from pathlib import Path
+from typing import Optional, Tuple
 
+import pyterrier as pt
 
 configure = pt.java.register_config('pyterrier.anserini', {
     'version': None,
@@ -17,13 +17,14 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
     def priority(self) -> int:
         return -10 # needs to be between pt.java.core (-100) and pt.terrier (0) to avoid issues with logger configs
 
-    def pre_init(self, jnius_config):
+    def pre_init(self, jnius_config): # noqa: ANN001
         if configure['version'] is None:
             jar, version = _get_pyserini_jar()
             self._message = f"version={version} (from pyserini package)"
         else:
             # download and use the anserini version specified by the user
-            jar = pt.java.mavenresolver.get_package_jar('io.anserini', "anserini", configure['version'], artifact='fatjar')
+            jar = pt.java.mavenresolver.get_package_jar(
+                'io.anserini', "anserini", configure['version'], artifact='fatjar')
             self._message = f"version={configure['version']} (local cache)"
 
         if jar is None:
@@ -31,13 +32,13 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
         else:
             jnius_config.add_classpath(jar)
 
-    def post_init(self, jnius):
-        # Temporarily disable the configure_classpath while pyserini is init'd, otherwise it will try to reconfigure jnius
+    def post_init(self, jnius): # noqa: ANN001
+        # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
         import pyserini.setup
         _configure_classpath = pyserini.setup.configure_classpath
         try:
             pyserini.setup.configure_classpath = pt.utils.noop
-            import pyserini.search.lucene # load the package
+            import pyserini.search.lucene  # load the package
         finally:
             pyserini.setup.configure_classpath = _configure_classpath
 

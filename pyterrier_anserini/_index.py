@@ -1,7 +1,9 @@
 import os
-from typing import Dict, List, Literal, Optional, Union, Any
+from typing import Any, Dict, List, Literal, Optional, Union
+
 import pyterrier as pt
 import pyterrier_alpha as pta
+
 import pyterrier_anserini
 from pyterrier_anserini import J
 from pyterrier_anserini._wmodel import DEFAULT_WMODEL_ARGS, AnseriniWeightModel
@@ -60,8 +62,8 @@ class AnseriniIndex(pta.Artifact):
         """Provides a retriever that uses the specified similarity function.
 
         Args:
-            similarity: The similarity function to use.
-            similarity_args: The arguments to the similarity function. Defaults to None.
+            wmodel: The weighting model to use.
+            wmodel_args: The arguments to the weighting model. Defaults to None.
             num_results: The number of results to return. Defaults to 1000.
             verbose: Output verbose logging. Defaults to False.
 

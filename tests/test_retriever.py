@@ -1,8 +1,11 @@
-import unittest
 import os
+import unittest
+
 import pandas as pd
 import pyterrier as pt
+
 import pyterrier_anserini
+
 
 class TestAnseriniRetriever(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -17,19 +20,19 @@ class TestAnseriniRetriever(unittest.TestCase):
         df = pt.Experiment([
                 bm25,
                 qld,
-                tf_idf                
-            ], 
-            dataset.get_topics(), 
-            dataset.get_qrels(), 
+                tf_idf
+            ],
+            dataset.get_topics(),
+            dataset.get_qrels(),
             ["map"])
         self.assertAlmostEqual(0.2856, df.iloc[0]["map"], places=4)
         for i in df['map']:
             self.assertGreater(i, 0)
-        
+
         # check re-ranking works too
-        resIn = tf_idf.search("chemical reactions") 
-        resOut = (tf_idf >> self.index.reranker('BM25') >> self.index.text_loader()).search("chemical reactions")
-        self.assertEqual(len(resIn), len(resOut))
+        res_in = tf_idf.search("chemical reactions")
+        res_out = (tf_idf >> self.index.reranker('BM25') >> self.index.text_loader()).search("chemical reactions")
+        self.assertEqual(len(res_in), len(res_out))
 
     def test_vaswani_impact(self):
         impact = self.index.impact()
