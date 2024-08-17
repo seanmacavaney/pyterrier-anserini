@@ -37,4 +37,4 @@ class TestAnseriniRetriever(unittest.TestCase):
             {'qid': '1', 'query_toks': {'chemical': 5.3, 'reactions': 1.1}},
         ]))
         self.assertEqual(len(res), 52)
-        self.assertEqual(res['score'][0], 10.6)
+        self.assertAlmostEqual(res['score'][0], 10.6, places=4)
