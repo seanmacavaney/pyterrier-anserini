@@ -19,9 +19,9 @@ Typical usage example:
 
 __version__ = '0.0.1'
 
+from pyterrier_anserini._java import J, set_version # noqa: I001
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._indexer import AnseriniIndexer
-from pyterrier_anserini._java import J, set_version
 from pyterrier_anserini._legacy import AnseriniBatchRetrieve
 from pyterrier_anserini._reranker import AnseriniReRanker
 from pyterrier_anserini._retriever import AnseriniRetriever
