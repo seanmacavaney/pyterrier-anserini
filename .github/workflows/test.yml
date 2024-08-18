@@ -55,17 +55,10 @@ jobs:
        run: |
          pytest --durations=20 -p no:faulthandler --json-report --json-report-file ${{ env.runtag }}.results.json --cov pyterrier_anserini --cov-report json:${{ env.runtag }}.coverage.json tests/
 
-     - name: Unit Test Report
-       if: always()
-       uses: pmeier/pytest-results-action@v0.7.1
-       with:
-         path: test-results.xml
-
      - name: Upload Test Results
        if: always()
        uses: actions/upload-artifact@v4
        with:
-         name: ${{ env.runtag }}
          path: ${{ env.runtag }}.*.json
          overwrite: true
 
