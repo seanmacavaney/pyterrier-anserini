@@ -67,6 +67,7 @@ jobs:
        with:
          name: ${{ env.runtag }}
          path: ${{ env.runtag }}.*.json
+         overwrite: true
 
      - name: Report Test Results
        if: always()
@@ -74,4 +75,4 @@ jobs:
          printf "**Test Results**\n\n" >> $GITHUB_STEP_SUMMARY
          jq '.summary' ${{ env.runtag }}.results.json >> $GITHUB_STEP_SUMMARY
          printf "\n\n**Test Coverage**\n\n" >> $GITHUB_STEP_SUMMARY
-         jq '.files | to_entries[] | " - `" + .key + "`: **" + .value.summary.percent_covered_display + "%**"' -r x.coverage.json >> $GITHUB_STEP_SUMMARY
+         jq '.files | to_entries[] | " - `" + .key + "`: **" + .value.summary.percent_covered_display + "%**"' -r ${{ env.runtag }}.coverage.json >> $GITHUB_STEP_SUMMARY
