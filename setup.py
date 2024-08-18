@@ -26,6 +26,15 @@ setup(
         'pyterrier.modules': [
             'anserini = pyterrier_anserini',
         ],
+        'pyterrier.artifact': [
+            'sparse_index.anserini = pyterrier_anserini:AnseriniIndex',
+        ],
+        'pyterrier.artifact.url_protocol_resolver': [
+            'anserini = pyterrier_anserini._util:_anserini_url_resolver',
+        ],
+        'pyterrier.artifact.metadata_adapter': [
+            'sparse_index.anserini = pyterrier_anserini._util:_anserini_metadata_adapter',
+        ],
     },
     install_requires=list(open('requirements.txt', 'rt')),
     python_requires='>=3.10',

@@ -236,5 +236,8 @@ class AnseriniIndex(pta.Artifact):
         field_info = J.IndexReaderUtils.getFieldInfo(self._searcher().object.reader)
         return [k for k in field_info if k != 'id']
 
+    def num_docs(self) -> int:
+        return self._searcher().object.get_total_num_docs()
+
     def __repr__(self):
         return f"AnseriniIndex({self.path!r})"

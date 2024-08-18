@@ -51,7 +51,7 @@ class AnseriniIndexer(pt.Indexer):
                 json.dump({
                     'type': 'sparse_index',
                     'format': 'anserini',
-                    'package_hint': 'pyterrier_anserini',
+                    'package_hint': 'pyterrier-anserini',
                     # TODO: other stuff (like stemmer used) in due course
                 }, fout)
 
