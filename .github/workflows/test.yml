@@ -20,6 +20,8 @@ jobs:
         ]
 
     runs-on: ${{ matrix.os }}
+    env:
+      runtag: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}
     steps:
 
      - name: Checkout
@@ -40,7 +42,7 @@ jobs:
        uses: actions/cache@v4
        with:
          path: ${{ env.pythonLocation }}
-         key: ${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.pyserini }}-${{ matrix.pyterrier }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements-dev.txt') }}
+         key: ${{ env.runtag }}-${{ hashFiles('requirements.txt', 'requirements-dev.txt') }}
 
      - name: Install Dependencies
        run: |
@@ -51,10 +53,25 @@ jobs:
 
      - name: Unit Test
        run: |
-         pytest --durations=20 -p no:faulthandler --junit-xml=test-results.xml tests/
+         pytest --durations=20 -p no:faulthandler --json-report --json-report-file ${{ env.runtag }}.results.json --cov pyterrier_anserini --cov-report json:${{ env.runtag }}.coverage.json tests/
 
      - name: Unit Test Report
        if: always()
        uses: pmeier/pytest-results-action@v0.7.1
        with:
          path: test-results.xml
+
+     - name: Upload Test Results
+       if: always()
+       uses: actions/upload-artifact@v4
+       with:
+         name: ${{ env.runtag }}
+         path: ${{ env.runtag }}.*.json
+
+     - name: Report Test Results
+       if: always()
+       run: |
+         printf "**Test Results**\n\n" >> $GITHUB_STEP_SUMMARY
+         jq '.summary' ${{ env.runtag }}.results.json >> $GITHUB_STEP_SUMMARY
+         printf "\n\n**Test Coverage**\n\n" >> $GITHUB_STEP_SUMMARY
+         jq '.files | to_entries[] | " - `" + .key + "`: **" + .value.summary.percent_covered_display + "%**"' -r x.coverage.json >> $GITHUB_STEP_SUMMARY
