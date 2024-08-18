@@ -6,7 +6,7 @@ import pyterrier_alpha as pta
 
 import pyterrier_anserini
 from pyterrier_anserini import J
-from pyterrier_anserini._wmodel import DEFAULT_WMODEL_ARGS, AnseriniWeightModel
+from pyterrier_anserini._similarity import DEFAULT_WMODEL_ARGS, AnseriniSimilarity
 
 
 @pt.java.required
@@ -53,8 +53,8 @@ class AnseriniIndex(pta.Artifact):
             verbose=verbose)
 
     def retriever(self,
-        wmodel: Union[str, AnseriniWeightModel],
-        wmodel_args: Optional[Dict[str, Any]] = None,
+        similarity: Union[str, AnseriniSimilarity],
+        similarity_args: Optional[Dict[str, Any]] = None,
         *,
         num_results: int = 1000,
         verbose: bool = False
@@ -62,8 +62,8 @@ class AnseriniIndex(pta.Artifact):
         """Provides a retriever that uses the specified similarity function.
 
         Args:
-            wmodel: The weighting model to use.
-            wmodel_args: The arguments to the weighting model. Defaults to None.
+            similarity: The similarity function to use.
+            similarity_args: The arguments to the similarity function. Defaults to None (no arguments).
             num_results: The number of results to return. Defaults to 1000.
             verbose: Output verbose logging. Defaults to False.
 
@@ -74,8 +74,8 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
-            wmodel=wmodel,
-            wmodel_args=wmodel_args,
+            similarity=similarity,
+            similarity_args=similarity_args,
             num_results=num_results,
             verbose=verbose)
 
@@ -101,8 +101,8 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
-            wmodel=AnseriniWeightModel.bm25,
-            wmodel_args={'bm25.k1': k1, 'bm25.b': b},
+            similarity=AnseriniSimilarity.bm25,
+            similarity_args={'bm25.k1': k1, 'bm25.b': b},
             num_results=num_results,
             verbose=verbose)
 
@@ -126,8 +126,8 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
-            wmodel=AnseriniWeightModel.qld,
-            wmodel_args={'qld_mu': mu},
+            similarity=AnseriniSimilarity.qld,
+            similarity_args={'qld_mu': mu},
             num_results=num_results,
             verbose=verbose)
 
@@ -149,7 +149,7 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
-            wmodel=AnseriniWeightModel.tfidf,
+            similarity=AnseriniSimilarity.tfidf,
             num_results=num_results,
             verbose=verbose)
 
@@ -173,21 +173,21 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
-            wmodel=AnseriniWeightModel.impact,
+            similarity=AnseriniSimilarity.impact,
             num_results=num_results,
             verbose=verbose)
 
     def reranker(self,
-        wmodel: Union[str, AnseriniWeightModel],
-        wmodel_args: Optional[Dict[str, Any]] = None,
+        similarity: Union[str, AnseriniSimilarity],
+        similarity_args: Optional[Dict[str, Any]] = None,
         *,
         verbose: bool = False
     ) -> pt.Transformer:
         """Provides a reranker that uses the specified weithing model.
 
         Args:
-            wmodel: The weighting model to use.
-            wmodel_args: The arguments to the weight model. Defaults to None.
+            similarity: The similarity function to use.
+            similarity_args: The arguments to the similarity function. Defaults to None (no arguments).
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -197,8 +197,8 @@ class AnseriniIndex(pta.Artifact):
         """
         return pyterrier_anserini.AnseriniReRanker(
             index=self,
-            wmodel=wmodel,
-            wmodel_args=wmodel_args,
+            similarity=similarity,
+            similarity_args=similarity_args,
             verbose=verbose)
 
     def text_loader(self,

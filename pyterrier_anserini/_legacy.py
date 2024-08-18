@@ -11,14 +11,14 @@ import pyterrier_anserini
 class AnseriniBatchRetrieve(pt.Transformer):
     """A backwards-compatible interface for Anserini retrieval and scoring."""
 
-    def __init__(self, index_location: str, k: int = 1000, wmodel: str = "BM25", verbose: bool = False):
+    def __init__(self, index_location: str, k: int = 1000, similarity: str = "BM25", verbose: bool = False):
         """Construct an AnseriniBatchRetrieve retrieve from pyserini.search.lucene.LuceneSearcher.
 
         Args:
             index_location: The location of the Anserini index.
             k: number of results to return. Default is 1000.
-            wmodel: Weighting models supported by Anserini. There are three options:
-             * `"BM25"` - the BM25 weighting model
+            similarity: Similarity model supported by Anserini. There are three options:
+             * `"BM25"` - the BM25 similarity function
              * `"QLD"`  - Dirichlet language modelling
              *  `"TFIDF"` - Lucene's `ClassicSimilarity <https://lucene.apache.org/core/8_1_0/core/org/apache/lucene/search/similarities/ClassicSimilarity.html>`_.
             verbose: If True, print verbose output. Default is False.
@@ -26,7 +26,7 @@ class AnseriniBatchRetrieve(pt.Transformer):
         """
         self.index_location = index_location
         self.k = k
-        self.wmodel = wmodel
+        self.similarity = similarity
         self.verbose = verbose
 
     __repr__ = pta.transformer_repr
@@ -45,13 +45,13 @@ class AnseriniBatchRetrieve(pt.Transformer):
         if v.mode == 'rerank':
             transformer = pyterrier_anserini.AnseriniReRanker(
                 self.index_location,
-                similarity=self.wmodel,
+                similarity=self.similarity,
                 verbose=self.verbose)
 
         elif v.mode == 'retrieve':
             transformer = pyterrier_anserini.AnseriniRetriever(
                 self.index_location,
-                similarity=self.wmodel,
+                similarity=self.similarity,
                 num_results=self.k,
                 verbose=self.verbose)
 

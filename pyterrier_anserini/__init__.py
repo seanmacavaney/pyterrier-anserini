@@ -26,9 +26,9 @@ from pyterrier_anserini._legacy import AnseriniBatchRetrieve
 from pyterrier_anserini._reranker import AnseriniReRanker
 from pyterrier_anserini._retriever import AnseriniRetriever
 from pyterrier_anserini._text_loader import AnseriniTextLoader
-from pyterrier_anserini._wmodel import AnseriniWeightModel
+from pyterrier_anserini._similarity import AnseriniSimilarity
 
 __all__ = [
     'set_version', 'AnseriniIndex', 'AnseriniIndexer', 'AnseriniRetriever', 'AnseriniReRanker', 'AnseriniBatchRetrieve',
-    'AnseriniWeightModel', 'AnseriniTextLoader', 'J'
+    'AnseriniSimilarity', 'AnseriniTextLoader', 'J'
 ]

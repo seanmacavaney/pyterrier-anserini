@@ -6,7 +6,7 @@ import pyterrier_alpha as pta
 
 from pyterrier_anserini import J
 from pyterrier_anserini._index import AnseriniIndex
-from pyterrier_anserini._wmodel import AnseriniWeightModel
+from pyterrier_anserini._similarity import AnseriniSimilarity
 
 
 @pt.java.required
@@ -14,8 +14,8 @@ class AnseriniReRanker(pt.Transformer):
     """A transformer that scores (i.e., re-ranks) the provided documents from an Anserini index."""
     def __init__(self,
         index: Union[AnseriniIndex, str],
-        wmodel: Union[str, AnseriniWeightModel],
-        wmodel_args: Dict = None,
+        similarity: Union[str, AnseriniSimilarity],
+        similarity_args: Dict = None,
         *,
         verbose: bool = False
     ):
@@ -23,13 +23,13 @@ class AnseriniReRanker(pt.Transformer):
 
         Args:
             index: The index to score from. If a string, an AnseriniIndex object is created for the path.
-            wmodel: The weighting model to use for scoring.
-            wmodel_args: A dictionary of arguments to use for the weighting model.
+            similarity: The similarity function to use for scoring.
+            similarity_args: A dictionary of arguments to use for the similarity function.
             verbose: Whether to display a progress bar when scoring.
         """
         self.index = index if isinstance(index, AnseriniIndex) else AnseriniIndex(index)
-        self.wmodel = AnseriniWeightModel(wmodel)
-        self.wmodel_args = wmodel_args or {}
+        self.similarity = AnseriniSimilarity(similarity)
+        self.similarity_args = similarity_args or {}
         self.verbose = verbose
 
     __repr__ = pta.transformer_repr
@@ -49,7 +49,7 @@ class AnseriniReRanker(pt.Transformer):
             v.result_frame(['query_toks'], mode='query_toks')
             v.result_frame(['query'], mode='query_text')
 
-        sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
+        sim = AnseriniSimilarity(self.similarity).to_java_sim(**self.similarity_args)
         index_reader = self.index._searcher().object.reader
 
         if v.mode == 'query_lucene':

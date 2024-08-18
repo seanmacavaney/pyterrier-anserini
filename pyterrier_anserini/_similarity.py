@@ -9,7 +9,7 @@ DEFAULT_WMODEL_ARGS = {
     'qld.mu': 1000.,
 }
 
-class AnseriniWeightModel(Enum):
+class AnseriniSimilarity(Enum):
     bm25 = 'BM25'
     qld = 'QLD'
     tfidf = 'TFIDF'
@@ -19,15 +19,15 @@ class AnseriniWeightModel(Enum):
         args = {}
         args.update(DEFAULT_WMODEL_ARGS)
         args.update(kwargs)
-        if self == AnseriniWeightModel.bm25:
+        if self == AnseriniSimilarity.bm25:
             return J.BM25Similarity(args['bm25.k1'], args['bm25.b'])
-        elif self == AnseriniWeightModel.qld:
+        elif self == AnseriniSimilarity.qld:
             return J.LMDirichletSimilarity(args['qld.mu'])
-        elif self == AnseriniWeightModel.tfidf:
+        elif self == AnseriniSimilarity.tfidf:
             return J.ClassicSimilarity()
-        if self == AnseriniWeightModel.impact:
+        if self == AnseriniSimilarity.impact:
             return J.ImpactSimilarity()
-        raise ValueError(f"wmodel {self} is not supported")
+        raise ValueError(f"similarity {self} is not supported")
 
     def __repr__(self):
         return repr(self.value)

@@ -7,7 +7,7 @@ import pyterrier_alpha as pta
 
 from pyterrier_anserini import J
 from pyterrier_anserini._index import AnseriniIndex
-from pyterrier_anserini._wmodel import AnseriniWeightModel
+from pyterrier_anserini._similarity import AnseriniSimilarity
 
 
 def _noop_query_parser(query: str) -> str:
@@ -29,8 +29,8 @@ class AnseriniRetriever(pt.Transformer):
     """Retrieves from an Anserini index."""
     def __init__(self,
         index: Union[AnseriniIndex, str],
-        wmodel: Union[AnseriniWeightModel, str] = "BM25",
-        wmodel_args: Dict[str, any] = None,
+        similarity: Union[AnseriniSimilarity, str] = "BM25",
+        similarity_args: Dict[str, any] = None,
         *,
         num_results: int = 1000,
         verbose: bool = False,
@@ -38,17 +38,17 @@ class AnseriniRetriever(pt.Transformer):
         """Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher.
 
         Args:
-            index(str|AnseriniIndex): The Anserini index.
-            wmodel(str|AnseriniWeightModel): Weighting models supported by Anserini.
-            num_results(int): number of results to return. Default is 1000.
-            verbose(bool): show a progress bar during retrieval?
-            wmodel_args(dict): model-specific arguments, like bm25.k1.
+            index: The Anserini index.
+            similarity: The similarity function to use.
+            similarity_args: model-specific arguments, like bm25.k1.
+            num_results: number of results to return. Default is 1000.
+            verbose: show a progress bar during retrieval?
         """
         if not isinstance(index, AnseriniIndex):
             index = AnseriniIndex(index)
         self.index = index
-        self.wmodel = wmodel
-        self.wmodel_args = wmodel_args or {}
+        self.similarity = similarity
+        self.similarity_args = similarity_args or {}
         self.num_results = num_results
         self.verbose = verbose
 
@@ -68,7 +68,7 @@ class AnseriniRetriever(pt.Transformer):
             v.query_frame(extra_columns=['query_toks'], mode='query_toks')
             v.query_frame(extra_columns=['query'], mode='query_text')
 
-        sim = AnseriniWeightModel(self.wmodel).to_java_sim(**self.wmodel_args)
+        sim = AnseriniSimilarity(self.similarity).to_java_sim(**self.similarity_args)
         searcher = self.index._searcher()
         searcher.object.searcher.setSimilarity(sim)
 
