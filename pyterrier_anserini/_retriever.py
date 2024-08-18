@@ -1,4 +1,4 @@
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -33,6 +33,7 @@ class AnseriniRetriever(pt.Transformer):
         similarity_args: Dict[str, any] = None,
         *,
         num_results: int = 1000,
+        include_fields: Optional[List[str]] = None,
         verbose: bool = False,
     ):
         """Construct an AnseriniRetriever retrieve from pyserini.search.lucene.LuceneSearcher.
@@ -42,6 +43,7 @@ class AnseriniRetriever(pt.Transformer):
             similarity: The similarity function to use.
             similarity_args: model-specific arguments, like bm25.k1.
             num_results: number of results to return. Default is 1000.
+            include_fields: a list of extra stored fields to include for each result. `None` indicates no extra fields.
             verbose: show a progress bar during retrieval?
         """
         if not isinstance(index, AnseriniIndex):
@@ -50,6 +52,7 @@ class AnseriniRetriever(pt.Transformer):
         self.similarity = similarity
         self.similarity_args = similarity_args or {}
         self.num_results = num_results
+        self.include_fields = include_fields
         self.verbose = verbose
 
     __repr__ = pta.transformer_repr
@@ -87,14 +90,23 @@ class AnseriniRetriever(pt.Transformer):
         if self.verbose:
             it = pt.tqdm(it, desc=str(self), total=len(inp), unit='d')
 
-        result = pta.DataFrameBuilder(['_index', 'docno', 'score', 'rank'])
+        result_cols = ['_index', 'docno', 'score', 'rank']
+        if self.include_fields:
+            result_cols += self.include_fields
+        result = pta.DataFrameBuilder(result_cols)
         for i, query in it:
             hits = searcher.search(q_transform(query), k=self.num_results)
-            result.extend({
+            records = {
                 '_index': i,
                 'docno': [h.docid for h in hits],
                 'score': [h.score for h in hits],
                 'rank': np.arange(len(hits)),
-            })
+            }
+            if self.include_fields:
+                records.update({
+                    f: [h.lucene_document.get(f) for h in hits]
+                    for f in self.include_fields
+                })
+            result.extend(records)
 
         return result.to_df(merge_on_index=inp)

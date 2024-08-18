@@ -8,6 +8,7 @@ import pyterrier_anserini
 from pyterrier_anserini import J
 from pyterrier_anserini._similarity import DEFAULT_WMODEL_ARGS, AnseriniSimilarity
 
+_TFields = Union[List[str], str, Literal['*']]
 
 @pt.java.required
 class AnseriniIndex(pta.Artifact):
@@ -36,14 +37,14 @@ class AnseriniIndex(pta.Artifact):
 
     def indexer(self,
         *,
-        fields: Union[List[str], Literal['*']] = '*',
+        fields: _TFields = '*',
         verbose: bool = False
     ) -> pt.Indexer:
         """Provides an indexer for this index.
 
         Args:
-            fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the fields
-                provided in this argumetn are concatenated and indexed.
+            fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the
+                fields provided in this argument are concatenated and indexed.
             verbose: Whether to display a progress bar when indexing.
 
         Category: Transformer Builders
@@ -57,6 +58,7 @@ class AnseriniIndex(pta.Artifact):
         similarity_args: Optional[Dict[str, Any]] = None,
         *,
         num_results: int = 1000,
+        include_fields: Optional[_TFields] = None,
         verbose: bool = False
     ) -> pt.Transformer:
         """Provides a retriever that uses the specified similarity function.
@@ -65,6 +67,8 @@ class AnseriniIndex(pta.Artifact):
             similarity: The similarity function to use.
             similarity_args: The arguments to the similarity function. Defaults to None (no arguments).
             num_results: The number of results to return. Defaults to 1000.
+            include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
+                included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -77,6 +81,7 @@ class AnseriniIndex(pta.Artifact):
             similarity=similarity,
             similarity_args=similarity_args,
             num_results=num_results,
+            include_fields=self._resolve_fields(include_fields),
             verbose=verbose)
 
     def bm25(self,
@@ -84,6 +89,7 @@ class AnseriniIndex(pta.Artifact):
         k1: float = DEFAULT_WMODEL_ARGS['bm25.k1'],
         b: float = DEFAULT_WMODEL_ARGS['bm25.b'],
         num_results: int = 1000,
+        include_fields: Optional[_TFields] = None,
         verbose: bool = False
     ) -> pt.Transformer:
         """Providers a retriever that uses BM25 over this index.
@@ -92,6 +98,8 @@ class AnseriniIndex(pta.Artifact):
             k1: The BM25 k1 parameter. Defaults to 0.9.
             b: The BM25 b parameter. Defaults to 0.4.
             num_results: The number of results to return. Defaults to 1000.
+            include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
+                included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -104,12 +112,14 @@ class AnseriniIndex(pta.Artifact):
             similarity=AnseriniSimilarity.bm25,
             similarity_args={'bm25.k1': k1, 'bm25.b': b},
             num_results=num_results,
+            include_fields=self._resolve_fields(include_fields),
             verbose=verbose)
 
     def qld(self,
         *,
         mu: float = DEFAULT_WMODEL_ARGS['qld.mu'],
         num_results: int = 1000,
+        include_fields: Optional[_TFields] = None,
         verbose: bool = False
     ) -> pt.Transformer:
         """Providers a retriever that uses Query Likelihood with Dirichlet smoothing over this index.
@@ -117,6 +127,8 @@ class AnseriniIndex(pta.Artifact):
         Args:
             mu: The Dirichlet smoothing parameter. Defaults to 1000.
             num_results: The number of results to return. Defaults to 1000.
+            include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
+                included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -129,17 +141,21 @@ class AnseriniIndex(pta.Artifact):
             similarity=AnseriniSimilarity.qld,
             similarity_args={'qld_mu': mu},
             num_results=num_results,
+            include_fields=self._resolve_fields(include_fields),
             verbose=verbose)
 
     def tfidf(self,
         *,
         num_results: int = 1000,
+        include_fields: Optional[_TFields] = None,
         verbose: bool = False
     ) -> pt.Transformer:
         """Provides a TF-IDF retriever over this index.
 
         Args:
             num_results: The number of results to return. Defaults to 1000.
+            include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
+                included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -151,11 +167,13 @@ class AnseriniIndex(pta.Artifact):
             index=self,
             similarity=AnseriniSimilarity.tfidf,
             num_results=num_results,
+            include_fields=self._resolve_fields(include_fields),
             verbose=verbose)
 
     def impact(self,
         *,
         num_results: int = 1000,
+        include_fields: Optional[_TFields] = None,
         verbose: bool = False
     ) -> pt.Transformer:
         """Provides a retriever for pre-comptued impact scores.
@@ -164,6 +182,8 @@ class AnseriniIndex(pta.Artifact):
 
         Args:
             num_results: The number of results to return. Defaults to 1000.
+            include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
+                included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
@@ -175,6 +195,7 @@ class AnseriniIndex(pta.Artifact):
             index=self,
             similarity=AnseriniSimilarity.impact,
             num_results=num_results,
+            include_fields=self._resolve_fields(include_fields),
             verbose=verbose)
 
     def reranker(self,
@@ -217,14 +238,9 @@ class AnseriniIndex(pta.Artifact):
 
         Category: Transformer Builders
         """
-        if fields == '*':
-            fields = self.fields()
-        elif isinstance(fields, str):
-            fields = [fields]
-
         return pyterrier_anserini.AnseriniTextLoader(
             index=self,
-            fields=fields,
+            fields=self._resolve_fields(fields),
             verbose=verbose)
 
     def _searcher(self):
@@ -235,6 +251,15 @@ class AnseriniIndex(pta.Artifact):
     def fields(self) -> List[str]:
         field_info = J.IndexReaderUtils.getFieldInfo(self._searcher().object.reader)
         return [k for k in field_info if k != 'id']
+
+    def _resolve_fields(self, fields: Optional[_TFields]) -> Optional[List[str]]:
+        if fields is None:
+            return None
+        if fields == '*':
+            return self.fields()
+        if isinstance(fields, str):
+            return [fields]
+        return fields
 
     def num_docs(self) -> int:
         return self._searcher().object.get_total_num_docs()

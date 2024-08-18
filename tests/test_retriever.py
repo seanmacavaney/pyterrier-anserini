@@ -41,3 +41,11 @@ class TestAnseriniRetriever(unittest.TestCase):
         ]))
         self.assertEqual(len(res), 52)
         self.assertAlmostEqual(res['score'][0], 10.6, places=4)
+
+    def test_include_fields(self):
+        bm25_then_content = self.index.bm25() >> self.index.text_loader(['content'])
+        bm25_including_content = self.index.bm25(include_fields=['content'])
+        topics = pt.get_dataset('vaswani').get_topics()
+        res_then_content = bm25_then_content(topics)
+        res_including_content = bm25_including_content(topics)
+        pd.testing.assert_frame_equal(res_then_content, res_including_content)
