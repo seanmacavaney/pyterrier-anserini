@@ -14,11 +14,12 @@ setup(
     version=get_version('pyterrier_anserini/__init__.py'),
     author='Sean MacAvaney',
     author_email='sean.macavaney@glasgow.ac.uk',
-    description="Anserini integration for PyTerrier",
+    description="Anserini + PyTerrier",
     long_description=open('README.md', 'r').read(),
     long_description_content_type="text/markdown",
     url='https://github.com/terrierteam/pyterrier-anserini',
     packages=find_packages(),
+    include_package_data=True,
     entry_points={
         'pyterrier.java.init': [
             'pyterrier_anserini.java = pyterrier_anserini._java:AnseriniJavaInit',

@@ -29,7 +29,7 @@ class AnseriniReRanker(pt.Transformer):
         """
         self.index = index if isinstance(index, AnseriniIndex) else AnseriniIndex(index)
         self.similarity = AnseriniSimilarity(similarity)
-        self.similarity_args = similarity_args or {}
+        self.similarity_args = similarity_args
         self.verbose = verbose
 
     __repr__ = pta.transformer_repr
@@ -49,7 +49,7 @@ class AnseriniReRanker(pt.Transformer):
             v.result_frame(['query_toks'], mode='query_toks')
             v.result_frame(['query'], mode='query_text')
 
-        sim = AnseriniSimilarity(self.similarity).to_java_sim(**self.similarity_args)
+        sim = AnseriniSimilarity(self.similarity).to_lucene_sim(self.similarity_args)
         index_reader = self.index._searcher().object.reader
 
         if v.mode == 'query_lucene':

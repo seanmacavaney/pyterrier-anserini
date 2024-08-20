@@ -44,10 +44,8 @@ class AnseriniIndex(pta.Artifact):
 
         Args:
             fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the
-                fields provided in this argument are concatenated and indexed.
+            fields provided in this argument are concatenated and indexed.
             verbose: Whether to display a progress bar when indexing.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniIndexer(self,
             fields=fields,
@@ -68,13 +66,11 @@ class AnseriniIndex(pta.Artifact):
             similarity_args: The arguments to the similarity function. Defaults to None (no arguments).
             num_results: The number of results to return. Defaults to 1000.
             include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
-                included. If '*', all fields are included.
+            included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
             A transformer that can be used to retrieve documents from this index.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
@@ -99,13 +95,11 @@ class AnseriniIndex(pta.Artifact):
             b: The BM25 b parameter. Defaults to 0.4.
             num_results: The number of results to return. Defaults to 1000.
             include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
-                included. If '*', all fields are included.
+            included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
             A transformer that can be used to retrieve documents from this index using qld.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
@@ -128,13 +122,11 @@ class AnseriniIndex(pta.Artifact):
             mu: The Dirichlet smoothing parameter. Defaults to 1000.
             num_results: The number of results to return. Defaults to 1000.
             include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
-                included. If '*', all fields are included.
+            included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
             A transformer that can be used to retrieve documents from this index using qld.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
@@ -155,13 +147,11 @@ class AnseriniIndex(pta.Artifact):
         Args:
             num_results: The number of results to return. Defaults to 1000.
             include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
-                included. If '*', all fields are included.
+            included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
             A transformer that can be used to retrieve documents from this index using TF-IDF.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
@@ -183,13 +173,11 @@ class AnseriniIndex(pta.Artifact):
         Args:
             num_results: The number of results to return. Defaults to 1000.
             include_fields: A list of the fields to include in the results. If `None` (default), no extra fields are
-                included. If '*', all fields are included.
+            included. If '*', all fields are included.
             verbose: Output verbose logging. Defaults to False.
 
         Returns:
             A transformer that can be used to retrieve documents from this index using impact scores.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniRetriever(
             index=self,
@@ -213,8 +201,6 @@ class AnseriniIndex(pta.Artifact):
 
         Returns:
             A transformer that can be used to score (rerank) documents from this index.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniReRanker(
             index=self,
@@ -235,8 +221,6 @@ class AnseriniIndex(pta.Artifact):
 
         Returns:
             A transformer that can be used to load the text from this index for each document.
-
-        Category: Transformer Builders
         """
         return pyterrier_anserini.AnseriniTextLoader(
             index=self,

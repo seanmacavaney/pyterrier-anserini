@@ -1,0 +1,2 @@
+include requirements.txt
+recursive-include pyterrier_anserini *.rst

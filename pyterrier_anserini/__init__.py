@@ -3,7 +3,8 @@
 This module provides a way to use the Anserini toolkit for operations like indexing
 and retrieval in PyTerrier.
 
-Typical usage example:
+Typical usage example::
+
   import pyterrier as pt
   from pyterrier_anserini import AnseriniIndex
   index = AnseriniIndex('my_index.anserini')

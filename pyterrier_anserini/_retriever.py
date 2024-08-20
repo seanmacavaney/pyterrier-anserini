@@ -50,7 +50,7 @@ class AnseriniRetriever(pt.Transformer):
             index = AnseriniIndex(index)
         self.index = index
         self.similarity = similarity
-        self.similarity_args = similarity_args or {}
+        self.similarity_args = similarity_args
         self.num_results = num_results
         self.include_fields = include_fields
         self.verbose = verbose
@@ -71,7 +71,7 @@ class AnseriniRetriever(pt.Transformer):
             v.query_frame(extra_columns=['query_toks'], mode='query_toks')
             v.query_frame(extra_columns=['query'], mode='query_text')
 
-        sim = AnseriniSimilarity(self.similarity).to_java_sim(**self.similarity_args)
+        sim = AnseriniSimilarity(self.similarity).to_lucene_sim(self.similarity_args)
         searcher = self.index._searcher()
         searcher.object.searcher.setSimilarity(sim)
 

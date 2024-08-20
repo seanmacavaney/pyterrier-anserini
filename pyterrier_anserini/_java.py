@@ -60,7 +60,14 @@ def _get_pyserini_jar() -> Optional[Tuple[str, str]]:
 
 
 @pt.java.before_init
-def set_version(version: str):
+def set_version(version: Optional[str] = None):
+    """Set the version of Anserini to use.
+
+    If version is ``None`` (default), the version of Anserini distributed with the pyserini package is used. Otherwise,
+    the specified version is downloaded from Maven and used insead.
+
+    Note that this function must be run before Java is initialized.
+    """
     configure['version'] = version
 
 

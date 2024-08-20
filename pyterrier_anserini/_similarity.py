@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any
+from typing import Dict, Optional
 
 from pyterrier_anserini import J
 
@@ -10,15 +10,27 @@ DEFAULT_WMODEL_ARGS = {
 }
 
 class AnseriniSimilarity(Enum):
+    """An enum representing the similarity functions available in Anserini."""
+
     bm25 = 'BM25'
     qld = 'QLD'
     tfidf = 'TFIDF'
     impact = 'Impact'
 
-    def to_java_sim(self, **kwargs: Any):
+    def to_lucene_sim(self, sim_args: Optional[Dict[str, float]] = None):
+        """Provides a Lucene similarity object that represents this similarity functions, including provided arguments.
+
+        Args:
+            sim_args: The arguments of this similarity function. Default values will be used when they are not provided.
+
+        Returns:
+            A ``pyjnius`` binding to a ``org.apache.lucene.search.similarities.Similarity`` object.
+        """
         args = {}
         args.update(DEFAULT_WMODEL_ARGS)
-        args.update(kwargs)
+        if sim_args is not None:
+            args.update(sim_args)
+
         if self == AnseriniSimilarity.bm25:
             return J.BM25Similarity(args['bm25.k1'], args['bm25.b'])
         elif self == AnseriniSimilarity.qld:
