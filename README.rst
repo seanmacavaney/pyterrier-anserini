@@ -1,3 +1,6 @@
+.. NOTE: this file was generated from pyterrier_anserini/pt_docs/index.rst. Changes made to README.rst may be reverted.
+.. Make any changes to pyterrier_anserini/pt_docs/index.rst instead.
+
 Anserini + PyTerrier
 =====================================
 
@@ -5,18 +8,6 @@ Anserini + PyTerrier
 `Lucene <https://lucene.apache.org/>`_. ``pyterrier-anserini`` provides a PyTerrier-compatible
 interface to Anserini, allowing you to easily run experiments and combine it with other systems.
 
-.. BEGIN_README_SKIP
-
-.. toctree::
-   :maxdepth: 1
-
-   Indexing <indexing>
-   Retrieval <retrieval>
-   Re-Ranking <reranking>
-   Extras <extras>
-   API Documentation <api>
-
-.. END_README_SKIP
 
 Quick Start
 -------------------------------------
@@ -28,7 +19,7 @@ You can install ``pyterrier-anserini`` with pip:
 
    $ pip install pyterrier-anserini
 
-:class:`~pyterrier_anserini.AnseriniIndex` is the main class for working with Anserini.
+``pyterrier_anserini.AnseriniIndex`` is the main class for working with Anserini.
 For instance, you can download a pre-built index from HuggingFace and retrieve with BM25 using the following
 snippet:
 
