@@ -17,7 +17,7 @@ You can install ``pyterrier-anserini`` with pip:
 .. code-block:: console
    :caption: Install ``pyterrier-anserini``
 
-   $ pip install pyterrier-anserini
+   $ pip install git+https://github.com/seanmacavaney/pyterrier-anserini
 
 ``pyterrier_anserini.AnseriniIndex`` is the main class for working with Anserini.
 For instance, you can download a pre-built index from HuggingFace and retrieve with BM25 using the following
