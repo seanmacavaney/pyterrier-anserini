@@ -1,8 +1,8 @@
 Anserini + PyTerrier
 =====================================
 
-`Anserini <https://github.com/castorini/anserini/>`_ is a retrieval toolkit built on top of
-`Lucene <https://lucene.apache.org/>`_. ``pyterrier-anserini`` provides a PyTerrier-compatible
+`Anserini <https://github.com/castorini/anserini/>`__ is a retrieval toolkit built on top of
+`Lucene <https://lucene.apache.org/>`__. ``pyterrier-anserini`` provides a `PyTerrier <https://github.com/terrier-org/pyterrier>`__-compatible
 interface to Anserini, allowing you to easily run experiments and combine it with other systems.
 
 .. BEGIN_README_SKIP
