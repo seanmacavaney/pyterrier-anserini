@@ -1,9 +1,12 @@
+import importlib.metadata
 import os
 from glob import glob
 from pathlib import Path
 from typing import Optional, Tuple
+from warnings import warn
 
 import pyterrier as pt
+from packaging.version import Version
 
 configure = pt.java.register_config('pyterrier.anserini', {
     'version': None,
@@ -14,8 +17,17 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
     def __init__(self):
         self._message = None
 
-    def priority(self) -> int:
-        return -10 # needs to be between pt.java.core (-100) and pt.terrier (0) to avoid issues with logger configs
+    def condition(self) -> bool:
+        """Disables loading with anserini >= 0.36 since it introduces incompatible dependencies."""
+        try:
+            pyserini_version = Version(importlib.metadata.version('pyserini'))
+            if pyserini_version >= Version('0.36.0'):
+                warn('pyserini>=0.36.0 is not currently supported by pyterrier-anserini, disabling')
+                return False
+        except Exception as ex:
+            warn(f'error loading anserini java: {ex}')
+            return False
+        return True
 
     def pre_init(self, jnius_config): # noqa: ANN001
         if configure['version'] is None:
