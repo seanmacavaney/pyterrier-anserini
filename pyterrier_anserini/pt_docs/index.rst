@@ -10,9 +10,6 @@ interface to Anserini, allowing you to easily run experiments and combine it wit
 .. toctree::
    :maxdepth: 1
 
-   Indexing <indexing>
-   Retrieval <retrieval>
-   Re-Ranking <reranking>
    Extras <extras>
    API Documentation <api>
 
