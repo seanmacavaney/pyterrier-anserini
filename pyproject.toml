@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyterrier-anserini"
-description = "Anserini + PyTerrier"]
+description = "Anserini + PyTerrier"
 requires-python = ">=3.10"
 authors = [
   {name = "Sean MacAvaney", email = "sean.macavaney@glasgow.ac.uk"},
@@ -22,7 +22,7 @@ classifiers = [
   "Text Processing",
   "Text Processing :: Indexing",
 ]
-dynamic = ["version", "dependencies"
+dynamic = ["version", "dependencies"]
 
 [tool.setuptools.dynamic]
 version = {attr = "pyterrier_anserini.__version__"}
