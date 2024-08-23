@@ -14,9 +14,8 @@ jobs:
         os: ['ubuntu-latest']
         pyserini: ['pyserini==0.22.0', 'pyserini==0.36.0', 'pyserini']
         pyterrier: [
-          # 'python-terrier', # TODO: from pypi
-          # 'git+https://github.com/terrier-org/pyterrier', # TODO: latest on github
-          'git+https://github.com/terrier-org/pyterrier@remove_anserini', # TMP: remove_anserini branch
+          'python-terrier==0.11.0', # from pypi
+          'git+https://github.com/terrier-org/pyterrier', # latest on github
         ]
 
     runs-on: ${{ matrix.os }}
