@@ -11,6 +11,7 @@ from packaging.version import Version
 configure = pt.java.register_config('pyterrier.anserini', {
     'version': None,
 })
+_version = None
 
 
 class AnseriniJavaInit(pt.java.JavaInitializer):
@@ -20,24 +21,24 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
     def condition(self) -> bool:
         """Disables loading with anserini >= 0.36 since it introduces incompatible dependencies."""
         try:
-            pyserini_version = Version(importlib.metadata.version('pyserini'))
-            if pyserini_version >= Version('0.36.0'):
-                warn('pyserini>=0.36.0 is not currently supported by pyterrier-anserini, disabling')
-                return False
+            importlib.metadata.version('pyserini')
         except Exception as ex:
             warn(f'error loading anserini java: {ex}')
             return False
         return True
 
     def pre_init(self, jnius_config): # noqa: ANN001
+        global _version
         if configure['version'] is None:
             jar, version = _get_pyserini_jar()
             self._message = f"version={version} (from pyserini package)"
+            _version = version
         else:
             # download and use the anserini version specified by the user
             jar = pt.java.mavenresolver.get_package_jar(
                 'io.anserini', "anserini", configure['version'], artifact='fatjar')
             self._message = f"version={configure['version']} (local cache)"
+            _version = configure['version']
 
         if jar is None:
             raise RuntimeError('Could not find anserini jar')
@@ -81,6 +82,11 @@ def set_version(version: Optional[str] = None):
     Note that this function must be run before Java is initialized.
     """
     configure['version'] = version
+
+
+@pt.java.required
+def check_version(min_version: str) -> bool:
+    return Version(min_version) <= Version(_version)
 
 
 J = pt.java.JavaClasses(

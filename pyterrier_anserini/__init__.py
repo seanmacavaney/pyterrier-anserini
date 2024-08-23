@@ -20,7 +20,7 @@ Typical usage example::
 
 __version__ = '0.0.1'
 
-from pyterrier_anserini._java import J, set_version # noqa: I001
+from pyterrier_anserini._java import J, set_version, check_version # noqa: I001
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._indexer import AnseriniIndexer
 from pyterrier_anserini._legacy import AnseriniBatchRetrieve
@@ -30,6 +30,6 @@ from pyterrier_anserini._text_loader import AnseriniTextLoader
 from pyterrier_anserini._similarity import AnseriniSimilarity
 
 __all__ = [
-    'set_version', 'AnseriniIndex', 'AnseriniIndexer', 'AnseriniRetriever', 'AnseriniReRanker', 'AnseriniBatchRetrieve',
-    'AnseriniSimilarity', 'AnseriniTextLoader', 'J'
+    'set_version', 'check_version', 'AnseriniIndex', 'AnseriniIndexer', 'AnseriniRetriever', 'AnseriniReRanker',
+    'AnseriniBatchRetrieve', 'AnseriniSimilarity', 'AnseriniTextLoader', 'J'
 ]
