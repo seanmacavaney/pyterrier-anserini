@@ -18,7 +18,7 @@ Typical usage example::
   retr(pt.get_dataset('vaswani').get_topics())
 """
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 from pyterrier_anserini._java import J, set_version, check_version # noqa: I001
 from pyterrier_anserini._index import AnseriniIndex
