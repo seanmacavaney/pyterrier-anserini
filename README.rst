@@ -15,7 +15,6 @@ Quick Start
 You can install ``pyterrier-anserini`` with pip:
 
 .. code-block:: console
-   :caption: Install ``pyterrier-anserini``
 
    $ pip install git+https://github.com/seanmacavaney/pyterrier-anserini
 
@@ -24,7 +23,6 @@ For instance, you can download a pre-built index from HuggingFace and retrieve w
 snippet:
 
 .. code-block:: python
-   :caption: Load an Anserini index from HuggingFace and retrieve using BM25
 
    >>> from pyterrier_anserini import AnseriniIndex
    >>> index = AnseriniIndex.from_hf('macavaney/msmarco-passage.anserini')
@@ -44,7 +42,6 @@ Acknowledgements
 This extension uses the Anserini package. If you use it, please be sure to cite Anserini:
 
 .. code-block:: bibtex
-   :caption: Anserini Citation
 
    @inproceedings{DBLP:conf/sigir/Yang0L17,
      author       = {Peilin Yang and
@@ -64,7 +61,6 @@ This extension uses the Anserini package. If you use it, please be sure to cite 
 This extension was built as part of the PyTerrier project. If you use it, please be sure to cite PyTerrier:
 
 .. code-block:: bibtex
-   :caption: PyTerrier Citation
 
    @inproceedings{DBLP:conf/cikm/MacdonaldTMO21,
      author       = {Craig Macdonald and
