@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyterrier-anserini"
+description = "Anserini + PyTerrier"]
+requires-python = ">=3.10"
+authors = [
+  {name = "Sean MacAvaney", email = "sean.macavaney@glasgow.ac.uk"},
+  {name = "Craig Macdonald", email = "craigm@dcs.gla.ac.uk"},
+]
+maintainers = [
+  {name = "Sean MacAvaney", email = "sean.macavaney@glasgow.ac.uk"},
+  {name = "Craig Macdonald", email = "craigm@dcs.gla.ac.uk"},
+]
+readme = "README.rst"
+license = {file = "LICENSE.txt"}
+classifiers = [
+  "Programming Language :: Python",
+  "OS Independent",
+  "Text Processing",
+  "Text Processing :: Indexing",
+]
+dynamic = ["version", "dependencies"
+
+[tool.setuptools.dynamic]
+version = {attr = "pyterrier_anserini.__version__"}
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+exclude = ["extras"]
+
+[project.urls]
+Repository = "https://github.com/seanmacavaney/pyterrier-anserini"
+"Bug Tracker" = "https://github.com/seanmacavaney/pyterrier-anserini/issues"
+
+[project.entry-points."pyterrier.java.init"]
+"pyterrier_anserini.java" = "pyterrier_anserini._java:AnseriniJavaInit"
+
+[project.entry-points."pyterrier.modules"]
+"anserini" = "pyterrier_anserini"
+
+[project.entry-points."pyterrier.artifact"]
+"sparse_index.anserini" = "pyterrier_anserini:AnseriniIndex"
+
+[project.entry-points."pyterrier.artifact.url_protocol_resolver"]
+"anserini" = "pyterrier_anserini._util:_anserini_url_resolver"
+
+[project.entry-points."pyterrier.artifact.metadata_adapter"]
+"sparse_index.anserini" = "pyterrier_anserini._util:_anserini_metadata_adapter"
+
