@@ -18,9 +18,9 @@ readme = "README.rst"
 license = {file = "LICENSE.txt"}
 classifiers = [
   "Programming Language :: Python",
-  "OS Independent",
-  "Text Processing",
-  "Text Processing :: Indexing",
+  "Operating System :: OS Independent",
+  "Topic :: Text Processing",
+  "Topic :: Text Processing :: Indexing",
 ]
 dynamic = ["version", "dependencies"]
 
