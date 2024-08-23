@@ -42,7 +42,7 @@ class AnseriniIndexer(pt.Indexer):
         """
         assert not self._index.built()
         from pyserini.index.lucene import LuceneIndexer
-        args = ['-index', self._index.path, '-storeContents']
+        args = ['-index', self._index.path, '-storeContents', '-storeDocvectors']
         indexer = LuceneIndexer(self._index.path, args=args)
         # create directory and metadata file
         if not os.path.exists(os.path.join(self._index.path, 'pt_meta.json')):
