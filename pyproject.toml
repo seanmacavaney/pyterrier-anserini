@@ -29,7 +29,7 @@ version = {attr = "pyterrier_anserini.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
-exclude = ["extras"]
+exclude = ["extras", "tests"]
 
 [project.urls]
 Repository = "https://github.com/seanmacavaney/pyterrier-anserini"
@@ -49,4 +49,3 @@ Repository = "https://github.com/seanmacavaney/pyterrier-anserini"
 
 [project.entry-points."pyterrier.artifact.metadata_adapter"]
 "sparse_index.anserini" = "pyterrier_anserini._util:_anserini_metadata_adapter"
-
