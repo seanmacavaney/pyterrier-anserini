@@ -15,12 +15,12 @@ maintainers = [
   {name = "Craig Macdonald", email = "craigm@dcs.gla.ac.uk"},
 ]
 readme = "README.rst"
-license = {file = "LICENSE.txt"}
 classifiers = [
   "Programming Language :: Python",
   "Operating System :: OS Independent",
   "Topic :: Text Processing",
   "Topic :: Text Processing :: Indexing",
+  "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
 ]
 dynamic = ["version", "dependencies"]
 
