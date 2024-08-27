@@ -86,6 +86,7 @@ def set_version(version: Optional[str] = None):
 
 @pt.java.required
 def check_version(min_version: str) -> bool:
+    """Check if the version of Anserini loaded is at least the specified version."""
     return Version(min_version) <= Version(_version)
 
 
@@ -96,4 +97,5 @@ J = pt.java.JavaClasses(
     IndexReaderUtils = 'io.anserini.index.IndexReaderUtils',
     QueryParser = 'org.apache.lucene.queryparser.classic.QueryParser',
     ImpactSimilarity = 'io.anserini.search.similarity.ImpactSimilarity',
+    AnalyzerUtils = 'io.anserini.analysis.AnalyzerUtils',
 )

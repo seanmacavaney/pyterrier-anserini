@@ -33,5 +33,9 @@ Miscellaneous
 .. autoenum:: pyterrier_anserini.AnseriniSimilarity
    :members:
 
+.. autoclass:: pyterrier_anserini.AnseriniTokenizer
+   :members:
+
 .. autofunction:: pyterrier_anserini.set_version
 
+.. autofunction:: pyterrier_anserini.check_version

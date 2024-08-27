@@ -28,8 +28,9 @@ from pyterrier_anserini._reranker import AnseriniReRanker
 from pyterrier_anserini._retriever import AnseriniRetriever
 from pyterrier_anserini._text_loader import AnseriniTextLoader
 from pyterrier_anserini._similarity import AnseriniSimilarity
+from pyterrier_anserini._tokenizer import AnseriniTokenizer
 
 __all__ = [
     'set_version', 'check_version', 'AnseriniIndex', 'AnseriniIndexer', 'AnseriniRetriever', 'AnseriniReRanker',
-    'AnseriniBatchRetrieve', 'AnseriniSimilarity', 'AnseriniTextLoader', 'J'
+    'AnseriniBatchRetrieve', 'AnseriniSimilarity', 'AnseriniTextLoader', 'J', 'AnseriniTokenizer',
 ]
