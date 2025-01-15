@@ -55,7 +55,7 @@ jobs:
          pytest --durations=20 -p no:faulthandler --json-report --json-report-file ${{ env.runtag }}.results.json --cov pyterrier_anserini --cov-report json:${{ env.runtag }}.coverage.json tests/
 
      - name: Report Test Results
-       if: always()
+       if: always() && matrix.pyterrier != 'git+https://github.com/terrier-org/pyterrier'
        run: |
          printf "**Test Results**\n\n" >> $GITHUB_STEP_SUMMARY
          jq '.summary' ${{ env.runtag }}.results.json >> $GITHUB_STEP_SUMMARY
