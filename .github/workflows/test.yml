@@ -12,7 +12,7 @@ jobs:
         python-version: ['3.10']
         java: [21]
         os: ['ubuntu-latest']
-        pyserini: ['pyserini==0.22.0', 'pyserini==0.36.0', 'pyserini']
+        pyserini: ['pyserini==0.36.0', 'pyserini']
         pyterrier: [
           'python-terrier==0.11.0', # from pypi
           'git+https://github.com/terrier-org/pyterrier', # latest on github
