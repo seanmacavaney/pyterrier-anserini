@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyterrier-anserini"
 description = "Anserini + PyTerrier"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 authors = [
   {name = "Sean MacAvaney", email = "sean.macavaney@glasgow.ac.uk"},
   {name = "Craig Macdonald", email = "craigm@dcs.gla.ac.uk"},
