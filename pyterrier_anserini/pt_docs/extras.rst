@@ -17,7 +17,7 @@ by using the ``"anserini:"`` URL prefix. For instance, to load the ``msmarco-v1-
 
 You can find a list of available indexes `here <https://github.com/castorini/pyserini/blob/master/docs/prebuilt-indexes.md>`_.
 
-Note that you can also load indexes from HuggingFace and share ones you've built through the :doc:`Artifact API <../../core/artifact>`:
+Note that you can also load indexes from HuggingFace and share ones you've built through the :ref:`Artifact API <artifacts>`:
 
 .. code-block:: python
    :caption: Load an Anserini index from HuggingFace
