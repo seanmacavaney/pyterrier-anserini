@@ -8,6 +8,7 @@ import pyterrier_alpha as pta
 from pyterrier_anserini import J
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._similarity import AnseriniSimilarity
+from pyterrier_anserini._gss import gss_to_lucene
 
 
 def _noop_query_parser(query: str) -> str:
@@ -21,6 +22,12 @@ def _toks_query_parser_factory(parser): # noqa: ANN001
             res.append(f'{parser.escape(tok)}^{weight:f}')
         query = ' '.join(res)
         return parser.parse(query)
+    return wrapped
+
+
+def _gss_query_parser_factory(analyzer): # noqa: ANN001
+    def wrapped(gss_query: str) -> Any:
+        return gss_to_lucene(gss_query, analyzer)
     return wrapped
 
 
@@ -68,6 +75,7 @@ class AnseriniRetriever(pt.Transformer):
         """
         with pta.validate.any(inp) as v:
             v.query_frame(extra_columns=['query_lucene'], mode='query_lucene')
+            v.query_frame(extra_columns=['query_gss'], mode='query_gss')
             v.query_frame(extra_columns=['query_toks'], mode='query_toks')
             v.query_frame(extra_columns=['query'], mode='query_text')
 
@@ -79,6 +87,9 @@ class AnseriniRetriever(pt.Transformer):
             parser = J.QueryParser("contents", searcher.object.analyzer)
             q_transform = parser.parse
             it = enumerate(inp['query_lucene'])
+        elif v.mode == 'query_gss':
+            q_transform = _qss_query_parser_factory(searcher.object.analyzer)
+            it = enumerate(inp['query_gss'])
         elif v.mode == 'query_toks':
             parser = J.QueryParser("contents", searcher.object.analyzer)
             q_transform = _toks_query_parser_factory(parser)
