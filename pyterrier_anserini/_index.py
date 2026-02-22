@@ -38,6 +38,7 @@ class AnseriniIndex(pta.Artifact):
     def indexer(self,
         *,
         fields: _TFields = '*',
+        store_positions: bool = False,
         verbose: bool = False
     ) -> pt.Indexer:
         """Provides an indexer for this index.
@@ -45,10 +46,12 @@ class AnseriniIndex(pta.Artifact):
         Args:
             fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the
             fields provided in this argument are concatenated and indexed.
+            store_positions: Whether to store positions in the index. This is required for phrase queries and proximity queries, but increases index size.
             verbose: Whether to display a progress bar when indexing.
         """
         return pyterrier_anserini.AnseriniIndexer(self,
             fields=fields,
+            store_positions=store_positions,
             verbose=verbose)
 
     def retriever(self,

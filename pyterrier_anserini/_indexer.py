@@ -15,6 +15,7 @@ class AnseriniIndexer(pt.Indexer):
         index: Union[AnseriniIndex, str],
         *,
         fields: Union[List[str], Literal['*']] = '*',
+        store_positions: bool = False,
         verbose: bool = False
     ):
         """Initializes the indexer.
@@ -23,10 +24,12 @@ class AnseriniIndexer(pt.Indexer):
             index: The index to index to. If a string, an AnseriniIndex object is created for the path.
             fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the fields
                 provided in this argumetn are concatenated and indexed.
+            store_positions: Whether to store positions in the index. This is required for phrase queries and proximity queries, but increases index size.
             verbose: Whether to display a progress bar when indexing.
         """
         self._index = index if isinstance(index, AnseriniIndex) else AnseriniIndex(index)
         self.fields = fields
+        self.store_positions = store_positions
         self.verbose = verbose
 
     __repr__ = pta.transformer_repr
@@ -43,6 +46,8 @@ class AnseriniIndexer(pt.Indexer):
         assert not self._index.built()
         from pyserini.index.lucene import LuceneIndexer
         args = ['-index', self._index.path, '-storeContents', '-storeDocvectors']
+        if self.store_positions:
+            args += ['-storePositions']
         indexer = LuceneIndexer(self._index.path, args=args)
         # create directory and metadata file
         if not os.path.exists(os.path.join(self._index.path, 'pt_meta.json')):
