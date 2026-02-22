@@ -46,7 +46,8 @@ class AnseriniIndex(pta.Artifact):
         Args:
             fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the
             fields provided in this argument are concatenated and indexed.
-            store_positions: Whether to store positions in the index. This is required for phrase queries and proximity queries, but increases index size.
+            store_positions: Whether to store positions in the index. This is required for phrase queries and
+                proximity queries, but increases index size.
             verbose: Whether to display a progress bar when indexing.
         """
         return pyterrier_anserini.AnseriniIndexer(self,

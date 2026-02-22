@@ -1,5 +1,6 @@
-from typing import List
 import re
+from typing import List
+
 import pyterrier as pt
 
 import pyterrier_anserini
@@ -14,21 +15,22 @@ def gss_to_lucene(
     *,
     content_field: str = 'contents',
 ) -> object:
-    """ Parses a query using a subset of Google Search Syntax (GSS) conventions into a Lucene query object.
+    """Parses a query using a subset of Google Search Syntax (GSS) conventions into a Lucene query object.
 
     This implementation supports the following GSS features:
      - literal query terms: irs w9
      - terms that must match: irs "w9" (here w9 must occur in the document, but irs may or may not occur)
-     - phrase matching: "irs w9" (here irs and w9 must occur in the document, and they must be adjacent to each other in the specified order)
+     - phrase matching: "irs w9" (here irs and w9 must occur in the document, and they must be adjacent to each other in
+       the specified order)
      - negative term matching: irs w9 -1040 (1040 must NOT occur in the document, but irs and w9 may or may not occur)
 
     The method should behave somewhat similarly to Google Search, but a few known differences are present:
-     - Lots of features are missing -- e.g., domain filtering (site:irs.gov), etc. These are treated as normal query terms.
+     - Lots of features are missing e.g., domain filtering (site:irs.gov), etc. They are treated as normal query terms.
      - The parsing almost certainly doesn't work the same exact way, especially for edge cases
      - Quoted matches are exact in Google Search, here the analyzer is applied (e.g., with stemming and such)
      - Similar story for negations -- the analyzer is applied
     """
-    J = pyterrier_anserini.J
+    J = pyterrier_anserini.J # noqa: N806 convention
     query_builder = J.BooleanQueryBuilder()
     for match in _gss_re.finditer(query):
         if match.group('must_not_match'):

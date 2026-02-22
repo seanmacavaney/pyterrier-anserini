@@ -24,7 +24,8 @@ class AnseriniIndexer(pt.Indexer):
             index: The index to index to. If a string, an AnseriniIndex object is created for the path.
             fields: The fields to index. If '*' (default), all fields are indexed. Otherwise, the values of the fields
                 provided in this argumetn are concatenated and indexed.
-            store_positions: Whether to store positions in the index. This is required for phrase queries and proximity queries, but increases index size.
+            store_positions: Whether to store positions in the index. This is required for phrase queries and
+                proximity queries, but increases index size.
             verbose: Whether to display a progress bar when indexing.
         """
         self._index = index if isinstance(index, AnseriniIndex) else AnseriniIndex(index)
