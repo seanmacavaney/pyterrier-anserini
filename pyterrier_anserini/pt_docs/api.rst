@@ -35,3 +35,4 @@ Miscellaneous
 
 .. autofunction:: pyterrier_anserini.set_version
 
+.. autofunction:: pyterrier_anserini.gss_to_lucene
