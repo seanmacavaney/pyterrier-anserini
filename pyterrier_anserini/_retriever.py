@@ -88,7 +88,7 @@ class AnseriniRetriever(pt.Transformer):
             q_transform = parser.parse
             it = enumerate(inp['query_lucene'])
         elif v.mode == 'query_gss':
-            q_transform = _qss_query_parser_factory(searcher.object.analyzer)
+            q_transform = _gss_query_parser_factory(searcher.object.analyzer)
             it = enumerate(inp['query_gss'])
         elif v.mode == 'query_toks':
             parser = J.QueryParser("contents", searcher.object.analyzer)
@@ -107,17 +107,17 @@ class AnseriniRetriever(pt.Transformer):
         result = pta.DataFrameBuilder(result_cols)
         for i, query in it:
             hits = searcher.search(q_transform(query), k=self.num_results)
-            records = {
-                '_index': i,
-                'docno': [h.docid for h in hits],
-                'score': [h.score for h in hits],
-                'rank': np.arange(len(hits)),
-            }
-            if self.include_fields:
-                records.update({
-                    f: [h.lucene_document.get(f) for h in hits]
-                    for f in self.include_fields
-                })
-            result.extend(records)
-
+            if hits:
+                records = {
+                    '_index': i,
+                    'docno': [h.docid for h in hits],
+                    'score': [h.score for h in hits],
+                    'rank': np.arange(len(hits)),
+                }
+                if self.include_fields:
+                    records.update({
+                        f: [h.lucene_document.get(f) for h in hits]
+                        for f in self.include_fields
+                    })
+                result.extend(records)
         return result.to_df(merge_on_index=inp)
