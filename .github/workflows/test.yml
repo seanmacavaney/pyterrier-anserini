@@ -13,10 +13,7 @@ jobs:
         java: [21]
         os: ['ubuntu-latest']
         pyserini: ['pyserini==0.36.0', 'pyserini']
-        pyterrier: [
-          'python-terrier==0.13.0', # old version on pypi
-          'pyterrier', # latest on pypi
-        ]
+        pyterrier: ['pyterrier>=1.0']
 
     runs-on: ${{ matrix.os }}
     env:
