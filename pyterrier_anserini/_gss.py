@@ -2,6 +2,8 @@ from typing import List
 import re
 import pyterrier as pt
 
+import pyterrier_anserini
+
 _gss_re = re.compile(r'-(?P<must_not_match>\S+)|"(?P<must_match>[^"]+)"|(?P<should_match>\S+)')
 
 
@@ -26,6 +28,7 @@ def gss_to_lucene(
      - Quoted matches are exact in Google Search, here the analyzer is applied (e.g., with stemming and such)
      - Similar story for negations -- the analyzer is applied
     """
+    J = pyterrier_anserini.J
     query_builder = J.BooleanQueryBuilder()
     for match in _gss_re.finditer(query):
         if match.group('must_not_match'):
@@ -56,7 +59,7 @@ def _tokenize(query: str, analyzer: object, *, content_field: str = 'content') -
     tokens = []
 
     try:
-        term_attrib = stream.addAttribute(J.CharTermAttribute)
+        term_attrib = stream.addAttribute(pyterrier_anserini.J.CharTermAttribute)
         stream.reset()
         while stream.incrementToken():
             tokens.append(term_attrib.toString())
@@ -65,13 +68,3 @@ def _tokenize(query: str, analyzer: object, *, content_field: str = 'content') -
         stream.close()
 
     return tokens
-
-
-J = pt.java.JavaClasses(
-    BooleanQueryBuilder = 'org.apache.lucene.search.BooleanQuery$Builder',
-    PhraseQueryBuilder = 'org.apache.lucene.search.PhraseQuery$Builder',
-    Occur = 'org.apache.lucene.search.BooleanClause$Occur',
-    TermQuery = 'org.apache.lucene.search.TermQuery',
-    Term = 'org.apache.lucene.index.Term',
-    CharTermAttribute = 'org.apache.lucene.analysis.tokenattributes.CharTermAttribute',
-)

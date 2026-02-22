@@ -96,4 +96,11 @@ J = pt.java.JavaClasses(
     IndexReaderUtils = 'io.anserini.index.IndexReaderUtils',
     QueryParser = 'org.apache.lucene.queryparser.classic.QueryParser',
     ImpactSimilarity = 'io.anserini.search.similarity.ImpactSimilarity',
+    StandardAnalyzer = 'org.apache.lucene.analysis.standard.StandardAnalyzer',
+    BooleanQueryBuilder = 'org.apache.lucene.search.BooleanQuery$Builder',
+    PhraseQueryBuilder = 'org.apache.lucene.search.PhraseQuery$Builder',
+    Occur = 'org.apache.lucene.search.BooleanClause$Occur',
+    TermQuery = 'org.apache.lucene.search.TermQuery',
+    Term = 'org.apache.lucene.index.Term',
+    CharTermAttribute = 'org.apache.lucene.analysis.tokenattributes.CharTermAttribute',
 )

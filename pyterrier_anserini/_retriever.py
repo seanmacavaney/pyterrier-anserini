@@ -5,10 +5,9 @@ import pandas as pd
 import pyterrier as pt
 import pyterrier_alpha as pta
 
-from pyterrier_anserini import J
+from pyterrier_anserini import J, gss_to_lucene
 from pyterrier_anserini._index import AnseriniIndex
 from pyterrier_anserini._similarity import AnseriniSimilarity
-from pyterrier_anserini._gss import gss_to_lucene
 
 
 def _noop_query_parser(query: str) -> str:
