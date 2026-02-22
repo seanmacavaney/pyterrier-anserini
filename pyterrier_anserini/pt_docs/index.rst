@@ -11,6 +11,7 @@ interface to Anserini, allowing you to easily run experiments and combine it wit
    :maxdepth: 1
 
    Extras <extras>
+   How-To Guides <how-to>
    API Documentation <api>
 
 .. END_README_SKIP
