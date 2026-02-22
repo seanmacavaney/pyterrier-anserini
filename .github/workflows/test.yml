@@ -14,8 +14,8 @@ jobs:
         os: ['ubuntu-latest']
         pyserini: ['pyserini==0.36.0', 'pyserini']
         pyterrier: [
-          'python-terrier==0.13.0', # from pypi
-          'git+https://github.com/terrier-org/pyterrier', # latest on github
+          'python-terrier==0.13.0', # old version on pypi
+          'pyterrier', # latest on pypi
         ]
 
     runs-on: ${{ matrix.os }}
@@ -52,12 +52,4 @@ jobs:
 
      - name: Unit Test
        run: |
-         pytest --durations=20 -p no:faulthandler --json-report --json-report-file ${{ env.runtag }}.results.json --cov pyterrier_anserini --cov-report json:${{ env.runtag }}.coverage.json tests/
-
-     - name: Report Test Results
-       if: always() && matrix.pyterrier != 'git+https://github.com/terrier-org/pyterrier'
-       run: |
-         printf "**Test Results**\n\n" >> $GITHUB_STEP_SUMMARY
-         jq '.summary' ${{ env.runtag }}.results.json >> $GITHUB_STEP_SUMMARY
-         printf "\n\n**Test Coverage**\n\n" >> $GITHUB_STEP_SUMMARY
-         jq '.files | to_entries[] | " - `" + .key + "`: **" + .value.summary.percent_covered_display + "%**"' -r ${{ env.runtag }}.coverage.json >> $GITHUB_STEP_SUMMARY
+         pytest --durations=20 -p no:faulthandler --cov pyterrier_anserini --cov-report json:${{ env.runtag }}.coverage.json tests/
