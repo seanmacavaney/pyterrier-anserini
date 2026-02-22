@@ -43,7 +43,7 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
         if jar is None:
             raise RuntimeError('Could not find anserini jar')
         else:
-            jnius_config.add_classpath(jar)
+            jnius_config.classpath = [jar] + jnius_config.classpath
 
     def post_init(self, jnius): # noqa: ANN001
         # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
