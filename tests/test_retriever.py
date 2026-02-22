@@ -10,7 +10,7 @@ import pyterrier_anserini
 class TestAnseriniRetriever(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.index = pyterrier_anserini.AnseriniIndex.from_url(os.path.join(os.path.dirname(__file__), 'fixtures/vaswani.tar.lz4'))
+        self.index = pt.Artifact.from_hf('macavaney/vaswani.anserini')
 
     def test_vaswani(self):
         bm25 = self.index.bm25()
