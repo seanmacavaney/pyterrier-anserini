@@ -50,6 +50,6 @@ Example:
    ]))
 
 The supported syntax rules are:
- - **Phrase match**: Enclose a sequence of words in double quotes to match the exact phrase. For example, ``"hello world"`` will only match documents containing the exact phrase "hello world".
- - **Required term**: Enclose a single word in double quotes to indicate that it must be present in the matching documents. For example, ``"hello"`` will only match documents that contain the word "hello".
- - **Prohibited term**: Prefix a single word with a minus sign to indicate that it must not be present in the matching documents. For example, ``-universe`` will only match documents that do not contain the word "universe".
+ - **Phrase match**: Enclose a sequence of words in double quotes to match the exact phrase. For example, ``"hello world"`` will boost documents containing the exact phrase "hello world".
+ - **Required term**: Enclose a single word in double quotes to indicate that it will be boosted.
+ - **Prohibited term**: Prefix a single word with a minus sign to indicate that it must not be present in the matching documents. These are ignored when scoring.
