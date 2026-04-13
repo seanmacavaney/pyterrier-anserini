@@ -101,6 +101,7 @@ J = pt.java.JavaClasses(
     PhraseQueryBuilder = 'org.apache.lucene.search.PhraseQuery$Builder',
     Occur = 'org.apache.lucene.search.BooleanClause$Occur',
     TermQuery = 'org.apache.lucene.search.TermQuery',
+    BoostQuery = 'org.apache.lucene.search.BoostQuery',
     Term = 'org.apache.lucene.index.Term',
     CharTermAttribute = 'org.apache.lucene.analysis.tokenattributes.CharTermAttribute',
 )

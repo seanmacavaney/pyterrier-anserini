@@ -14,3 +14,7 @@ class TestGss(unittest.TestCase):
         self.assertEqual('contents:hello +contents:world', pyterrier_anserini.gss_to_lucene('hello "world"', analyzer).toString())
         self.assertEqual('+contents:"hello world"', pyterrier_anserini.gss_to_lucene('"hello world"', analyzer).toString())
         self.assertEqual('+contents:"hello world" -contents:universe', pyterrier_anserini.gss_to_lucene('"hello world" -universe', analyzer).toString())
+        self.assertEqual('contents:hello contents:world', pyterrier_anserini.gss_to_lucene('hello world', analyzer, mode='boost').toString())
+        self.assertEqual('contents:hello (contents:world)^10.0', pyterrier_anserini.gss_to_lucene('hello "world"', analyzer, mode='boost').toString())
+        self.assertEqual('(contents:"hello world")^10.0 contents:hello contents:world', pyterrier_anserini.gss_to_lucene('"hello world"', analyzer, mode='boost').toString())
+        self.assertEqual('(contents:"hello world")^10.0 contents:hello contents:world', pyterrier_anserini.gss_to_lucene('"hello world" -universe', analyzer, mode='boost').toString())

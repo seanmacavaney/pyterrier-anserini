@@ -26,7 +26,7 @@ def _toks_query_parser_factory(parser): # noqa: ANN001
 
 def _gss_query_parser_factory(analyzer): # noqa: ANN001
     def wrapped(gss_query: str) -> Any:
-        return gss_to_lucene(gss_query, analyzer)
+        return gss_to_lucene(gss_query, analyzer, mode='boost')
     return wrapped
 
 
