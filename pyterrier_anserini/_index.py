@@ -254,3 +254,8 @@ class AnseriniIndex(pta.Artifact):
 
     def __repr__(self):
         return f"AnseriniIndex({self.path!r})"
+
+    @staticmethod
+    def example():
+        """Returns an example AnseriniIndex."""
+        return AnseriniIndex.from_hf('macavaney/vaswani.anserini')
