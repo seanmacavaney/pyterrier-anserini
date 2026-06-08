@@ -63,7 +63,7 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
 
     def post_init(self, jnius): # noqa: ANN001
         if Version(self._version) < Version('2.1.0'):
-            # Temporarily disable the configure_classpath during pyserini init, 
+            # Temporarily disable the configure_classpath during pyserini init,
             # otherwise it will try to reconfigure jnius
             import pyserini.setup
             _configure_classpath = pyserini.setup.configure_classpath
@@ -73,7 +73,7 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
             finally:
                 pyserini.setup.configure_classpath = _configure_classpath
         else:
-            # Temporarily disable the configure_classpath during pyserini init, 
+            # Temporarily disable the configure_classpath during pyserini init,
             # otherwise it will try to reconfigure jnius
             import pyserini._jvm
             _configure_classpath = pyserini._jvm.configure_classpath
