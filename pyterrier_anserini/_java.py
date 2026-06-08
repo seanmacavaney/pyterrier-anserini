@@ -26,11 +26,15 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
             warn(f'error loading anserini java: {ex}')
             return False
         return True
+    
+    def priority(self) -> int:
+        return -105 # run this initializer before ColabJavaInit
 
     def pre_init(self, jnius_config): # noqa: ANN001
         global _version
         if configure['version'] is None:
             jar, version = _get_pyserini_jar()
+            self._version = version
             self._message = f"version={version} (from pyserini package)"
             _version = version
         else:
@@ -42,18 +46,39 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
 
         if jar is None:
             raise RuntimeError('Could not find anserini jar')
-        else:
-            jnius_config.classpath = [jar] + jnius_config.classpath
+        
+        # force Google Colab to update Java to at least version 21, which is required by the pyserini
+        import pyterrier.java
+        try:
+            pyterrier.java.set_min_java_version(21)
+        except Exception as ex:
+            # this requires PyTerrier 1.1 or newer
+
+        jnius_config.classpath = [jar] + jnius_config.classpath
+        # see https://github.com/castorini/pyserini/blob/pyserini-2.2.0/pyserini/_jvm.py#L44-L46
+        jnius_config.add_options('--add-modules=jdk.incubator.vector')
+        # Suppress "WARNING: A restricted method in java.lang.foreign.Linker has been called"
+        jnius_config.add_options('--enable-native-access=ALL-UNNAMED')
 
     def post_init(self, jnius): # noqa: ANN001
-        # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
-        import pyserini.setup
-        _configure_classpath = pyserini.setup.configure_classpath
-        try:
-            pyserini.setup.configure_classpath = pt.utils.noop
-            import pyserini.search.lucene  # load the package
-        finally:
-            pyserini.setup.configure_classpath = _configure_classpath
+        if Version(self._version) < Version('2.1.0'):        
+            # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
+            import pyserini.setup
+            _configure_classpath = pyserini.setup.configure_classpath
+            try:
+                pyserini.setup.configure_classpath = pt.utils.noop
+                import pyserini.search.lucene  # load the package
+            finally:
+                pyserini.setup.configure_classpath = _configure_classpath
+        else:
+            # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
+            import pyserini._jvm
+            _configure_classpath = pyserini._jvm.configure_classpath
+            try:
+                pyserini._jvm.configure_classpath = pt.utils.noop
+                import pyserini.search.lucene  # load the package
+            finally:
+                pyserini._jvm.configure_classpath = _configure_classpath
 
     def message(self):
         return self._message
@@ -62,8 +87,8 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
 def _get_pyserini_jar() -> Optional[Tuple[str, str]]:
     # find the anserini jar distributed with pyserini
     # Adapted from pyserini/setup.py and pyserini/pyclass.py
-    import pyserini.setup
-    jar_root = os.path.join(os.path.split(pyserini.setup.__file__)[0], 'resources/jars/')
+    import pyserini
+    jar_root = os.path.join(os.path.split(pyserini.__file__)[0], 'resources/jars/')
     paths = glob(os.path.join(jar_root, 'anserini-*-fatjar.jar'))
     if not paths:
         return None, None
