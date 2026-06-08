@@ -26,7 +26,7 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
             warn(f'error loading anserini java: {ex}')
             return False
         return True
-    
+
     def priority(self) -> int:
         return -105 # run this initializer before ColabJavaInit
 
@@ -46,12 +46,12 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
 
         if jar is None:
             raise RuntimeError('Could not find anserini jar')
-        
+
         # force Google Colab to update Java to at least version 21, which is required by the pyserini
         import pyterrier.java
         try:
             pyterrier.java.set_min_java_version(21)
-        except AttributeError as ex:
+        except AttributeError:
             # this requires PyTerrier 1.1 or newer
             pass
 
@@ -62,8 +62,9 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
         pyterrier.java.add_option('--enable-native-access=ALL-UNNAMED')
 
     def post_init(self, jnius): # noqa: ANN001
-        if Version(self._version) < Version('2.1.0'):        
-            # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
+        if Version(self._version) < Version('2.1.0'):
+            # Temporarily disable the configure_classpath during pyserini init, 
+            # otherwise it will try to reconfigure jnius
             import pyserini.setup
             _configure_classpath = pyserini.setup.configure_classpath
             try:
@@ -72,7 +73,8 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
             finally:
                 pyserini.setup.configure_classpath = _configure_classpath
         else:
-            # Temporarily disable the configure_classpath during pyserini init, otherwise it will try to reconfigure jnius
+            # Temporarily disable the configure_classpath during pyserini init, 
+            # otherwise it will try to reconfigure jnius
             import pyserini._jvm
             _configure_classpath = pyserini._jvm.configure_classpath
             try:
