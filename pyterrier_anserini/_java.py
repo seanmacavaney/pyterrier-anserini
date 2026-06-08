@@ -51,8 +51,9 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
         import pyterrier.java
         try:
             pyterrier.java.set_min_java_version(21)
-        except Exception as ex:
+        except AttributeError as ex:
             # this requires PyTerrier 1.1 or newer
+            pass
 
         jnius_config.classpath = [jar] + jnius_config.classpath
         # see https://github.com/castorini/pyserini/blob/pyserini-2.2.0/pyserini/_jvm.py#L44-L46
