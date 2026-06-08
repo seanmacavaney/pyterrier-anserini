@@ -111,7 +111,7 @@ class AnseriniRetriever(pt.Transformer):
                     '_index': i,
                     'docno': [h.docid for h in hits],
                     'score': [h.score for h in hits],
-                    'rank': np.arange(len(hits)),
+                    'rank': np.arange(len(hits)) if len(hits) > 1 else pt.model.FIRST_RANK,
                 }
                 if self.include_fields:
                     records.update({
