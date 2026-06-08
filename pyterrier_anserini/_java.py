@@ -55,11 +55,11 @@ class AnseriniJavaInit(pt.java.JavaInitializer):
             # this requires PyTerrier 1.1 or newer
             pass
 
-        jnius_config.classpath = [jar] + jnius_config.classpath
+        pyterrier.java.add_jar(jar)
         # see https://github.com/castorini/pyserini/blob/pyserini-2.2.0/pyserini/_jvm.py#L44-L46
-        jnius_config.add_options('--add-modules=jdk.incubator.vector')
+        pyterrier.java.add_option('--add-modules=jdk.incubator.vector')
         # Suppress "WARNING: A restricted method in java.lang.foreign.Linker has been called"
-        jnius_config.add_options('--enable-native-access=ALL-UNNAMED')
+        pyterrier.java.add_option('--enable-native-access=ALL-UNNAMED')
 
     def post_init(self, jnius): # noqa: ANN001
         if Version(self._version) < Version('2.1.0'):        
